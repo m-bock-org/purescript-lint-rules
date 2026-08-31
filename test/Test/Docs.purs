@@ -40,9 +40,11 @@ examples :: forall cfg r. Described cfg r -> Array String
 examples r = case r.examples of
   Nothing -> []
   Just shown -> Array.concat
-    [ Maybe.maybe [] (\c -> fenced [ "-- " <> c ]) (shown.printConfig shown.config)
-    , fenced (labelled "-- good" shown.good)
-    , fenced (labelled "-- bad" shown.bad)
+    [ Maybe.maybe []
+        (\c -> [ "", "Read against `" <> c <> "`." ])
+        (shown.printConfig shown.config)
+    , labelled "Good" shown.good
+    , labelled "Bad" shown.bad
     ]
 
 -- | One block, or nothing where there is nothing to show.
@@ -51,10 +53,12 @@ fenced lines
   | Array.null lines = []
   | otherwise = [ "", "```purescript" ] <> lines <> [ "```" ]
 
+-- | A side of the rule, under its own heading, or nothing where there
+-- | is nothing to show.
 labelled :: String -> Array String -> Array String
 labelled label xs
   | Array.null xs = []
-  | otherwise = [ label ] <> xs
+  | otherwise = [ "", "**" <> label <> "**" ] <> fenced xs
 
 -- | Mirrors the module layout: one section per `Lint.Rules.<Group>`.
 -- | `modules` is what each entry claims to document, checked against

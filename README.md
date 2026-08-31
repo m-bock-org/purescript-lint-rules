@@ -32,13 +32,15 @@ rules = Rules.do
 
 Flags a qualified name whose own name repeats its qualifier.
 
+**Good**
+
 ```purescript
--- good
 Parser.Token
 ```
 
+**Bad**
+
 ```purescript
--- bad
 Parser.ParserToken
 ```
 
@@ -48,17 +50,17 @@ Parser.ParserToken
 
 Flags more than the configured number of brackets opening or closing in immediate succession.
 
-```purescript
--- a run of 2
-```
+Read against `a run of 2`.
+
+**Good**
 
 ```purescript
--- good
 f $ g (h (i x))
 ```
 
+**Bad**
+
 ```purescript
--- bad
 f (g (h (i x)))
 ```
 
@@ -66,17 +68,17 @@ f (g (h (i x)))
 
 Flags a lambda nested anywhere inside more than the configured number of enclosing lambdas.
 
-```purescript
--- a depth of 2
-```
+Read against `a depth of 2`.
+
+**Good**
 
 ```purescript
--- good
 \xs -> map (\x -> f x) xs
 ```
 
+**Bad**
+
 ```purescript
--- bad
 \xs -> map (\x -> filter (\y -> p y) x) xs
 ```
 
@@ -86,17 +88,17 @@ Flags a lambda nested anywhere inside more than the configured number of enclosi
 
 Flags a top-level declaration whose own source line span exceeds the configured maximum.
 
-```purescript
--- 5 lines
-```
+Read against `5 lines`.
+
+**Good**
 
 ```purescript
--- good
 report r = header r <> body r
 ```
 
+**Bad**
+
 ```purescript
--- bad
 report r =
   let
     h = header r
@@ -111,20 +113,20 @@ report r =
 
 Flags a line over the configured width - a type signature gets its own, wider allowance than ordinary code.
 
-```purescript
--- { code: 100, signature: 150 }
-```
+Read against `{ code: 100, signature: 150 }`.
+
+**Good**
 
 ```purescript
--- good
 describe x =
   "value: " <> show x
     <> " (" <> show (length x) <> " items, "
     <> show (total x) <> " in all)"
 ```
 
+**Bad**
+
 ```purescript
--- bad
 describe x = "value: " <> show x <> " (" <> show (length x) <> " items, " <> show (total x) <> " in all)"
 ```
 
@@ -134,17 +136,17 @@ describe x = "value: " <> show x <> " (" <> show (length x) <> " items, " <> sho
 
 Flags a top-level definition binding more parameters than the configured maximum. Counts the binders written in the equation, which need not match the arrows in its type.
 
-```purescript
--- max arity 3
-```
+Read against `max arity 3`.
+
+**Good**
 
 ```purescript
--- good
 resize { width, height, quality } img = img
 ```
 
+**Bad**
+
 ```purescript
--- bad
 resize width height quality img = img
 ```
 
