@@ -5,15 +5,20 @@ import Prelude
 import Data.Array (mapMaybe) as Array
 import Data.Foldable (fold)
 import Data.Maybe (Maybe(..))
-import Data.String.Common (joinWith) as Str
 import Data.Tuple.Nested ((/\))
 import PureScript.CST.Types (Declaration(..), Ident(..), Module(..), ModuleBody(..), Name(..))
 import PureScript.Lint.Graph (Graph, fromEdges, longestPath)
 import PureScript.Lint.Graph.Components (condense)
-import PureScript.Lint.Rule (LintResult(..), ModuleLint, RuleName(..))
+import PureScript.Lint.Rule
+  ( LintResult
+  , ModuleLint
+  , RuleName(..)
+  , violation
+  , violations
+  )
 import PureScript.Lint.Scope (BindingId(..), moduleReferences)
 
--- | Uses `violations`.
+-- | Uses `findings`.
 maxCallStackDepth :: Int -> ModuleLint
 maxCallStackDepth maxHops =
   { name: RuleName "max-call-stack-depth"
@@ -21,14 +26,12 @@ maxCallStackDepth maxHops =
       "Flags a function whose longest local call chain exceeds the configured number of hops."
   , goodExample: Nothing
   , badExample: Nothing
-  , rule: \_context cstModule -> case violations maxHops cstModule of
-      [] -> Passed
-      vs -> Violation (Str.joinWith "; " vs)
+  , rule: \_context cstModule -> violations (findings maxHops cstModule)
   }
 
 -- | Private. Used only by `maxCallStackDepth`. Uses `checkHops`, `topLevelName`.
-violations :: Int -> Module Void -> Array String
-violations maxHops cstModule@(Module { body: ModuleBody { decls } }) =
+findings :: Int -> Module Void -> Array String
+findings maxHops cstModule@(Module { body: ModuleBody { decls } }) =
   let
     edges = map (\r -> r.from /\ r.to) (moduleReferences cstModule)
     condensed = condense (fromEdges edges)
@@ -37,7 +40,7 @@ violations maxHops cstModule@(Module { body: ModuleBody { decls } }) =
 
 type Condensed = { graph :: Graph BindingId, representativeOf :: BindingId -> BindingId }
 
--- | Private, depth 2. Used only by `violations`.
+-- | Private, depth 2. Used only by `findings`.
 checkHops :: Int -> Condensed -> String -> Maybe String
 checkHops maxHops condensed name =
   let
@@ -47,7 +50,7 @@ checkHops maxHops condensed name =
   in
     if n > maxHops then Just message else Nothing
 
--- | Private, depth 2. Used only by `violations`.
+-- | Private, depth 2. Used only by `findings`.
 topLevelName :: Declaration Void -> Maybe String
 topLevelName = case _ of
   DeclValue { name: Name { name: Ident n } } -> Just n

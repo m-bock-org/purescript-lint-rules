@@ -14,10 +14,6 @@ import PureScript.Lint.Rules.Nesting.MaxCallStackDepth (maxCallStackDepth)
 
 ## The rules
 
-Every rule carries a trailing `## Context` block in its source explaining
-why it exists and what it trades off. Those are the real documentation;
-this table is the index.
-
 | Rule | Scope | Config | Flags |
 |---|---|---|---|
 | `maxLineLength` | module | `{ code, signature }` | A line over the configured width. Signatures get their own, wider budget, because a type that does not fit is usually saying something true. |

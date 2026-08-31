@@ -6,11 +6,15 @@ import Data.Array (dropEnd, foldl, last, mapMaybe, snoc) as Array
 import Data.Foldable (fold)
 import Data.Maybe (Maybe(..))
 import Data.Maybe (maybe) as Maybe
-import Data.String.Common (joinWith) as Str
 import PureScript.CST.Range (tokensOf)
 import PureScript.CST.Range.TokenList (toArray) as TokenList
 import PureScript.CST.Types (Module, Token(..))
-import PureScript.Lint.Rule (LintResult(..), ModuleLint, RuleName(..))
+import PureScript.Lint.Rule
+  ( LintResult
+  , ModuleLint
+  , RuleName(..)
+  , violations
+  )
 
 data Side = Opening | Closing
 
@@ -20,7 +24,7 @@ type Delimiter = { side :: Side, line :: Int }
 
 type Run = { side :: Side, line :: Int, count :: Int }
 
--- | Uses `violations`.
+-- | Uses `findings`.
 maxDelimiterRun :: Int -> ModuleLint
 maxDelimiterRun maxRun =
   { name: RuleName "max-delimiter-run"
@@ -28,17 +32,15 @@ maxDelimiterRun maxRun =
       "Flags more than the configured number of brackets opening or closing in immediate succession."
   , goodExample: Just "f $ g $ h $ i x"
   , badExample: Just "f (g (h (i x)))"
-  , rule: \_context cstModule -> case violations maxRun cstModule of
-      [] -> Passed
-      found -> Violation (Str.joinWith "; " found)
+  , rule: \_context cstModule -> violations (findings maxRun cstModule)
   }
 
 -- | Private. Used only by `maxDelimiterRun`. Uses `tooLong`, `extendRun`, `delimiters`.
-violations :: Int -> Module Void -> Array String
-violations maxRun cstModule = Array.mapMaybe (tooLong maxRun)
+findings :: Int -> Module Void -> Array String
+findings maxRun cstModule = Array.mapMaybe (tooLong maxRun)
   (Array.foldl extendRun [] (delimiters cstModule))
 
--- | Private, depth 2. Used only by `violations`. Uses `sideLabel`.
+-- | Private, depth 2. Used only by `findings`. Uses `sideLabel`.
 tooLong :: Int -> Run -> Maybe String
 tooLong maxRun run =
   if run.count <= maxRun then Nothing
@@ -54,7 +56,7 @@ tooLong maxRun run =
     , " - use $ for the outermost application, or name an inner part with a let"
     ]
 
--- | Private, depth 2. Used only by `violations`. Uses `sideOf`.
+-- | Private, depth 2. Used only by `findings`. Uses `sideOf`.
 delimiters :: Module Void -> Array Delimiter
 delimiters cstModule = Array.mapMaybe
   (\token -> map (\side -> { side, line: token.range.start.line }) (sideOf token.value))
@@ -66,7 +68,7 @@ sideLabel = case _ of
   Opening -> "open"
   Closing -> "close"
 
--- | Private, depth 2. Used only by `violations`.
+-- | Private, depth 2. Used only by `findings`.
 extendRun :: Array Run -> Delimiter -> Array Run
 extendRun acc next =
   let

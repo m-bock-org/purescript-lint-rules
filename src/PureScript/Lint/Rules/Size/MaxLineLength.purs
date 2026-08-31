@@ -9,12 +9,16 @@ import Data.Map as Map
 import Data.Maybe (Maybe(..))
 import Data.Set (Set)
 import Data.Set as Set
-import Data.String.Common (joinWith) as Str
 import Data.Tuple.Nested (type (/\), (/\))
 import PureScript.CST.Range (rangeOf, tokensOf)
 import PureScript.CST.Range.TokenList (toArray) as TokenList
 import PureScript.CST.Types (Declaration(..), Module(..), ModuleBody(..), SourceToken, Token(..))
-import PureScript.Lint.Rule (LintResult(..), ModuleLint, RuleName(..))
+import PureScript.Lint.Rule
+  ( LintResult
+  , ModuleLint
+  , RuleName(..)
+  , violations
+  )
 
 type LineWidths = { code :: Int, signature :: Int }
 
@@ -26,9 +30,7 @@ maxLineLength widths =
       "Flags a line over the configured width - a type signature gets its own, wider allowance than ordinary code."
   , goodExample: Nothing
   , badExample: Nothing
-  , rule: \_context cstModule -> case overLongLines widths cstModule of
-      [] -> Passed
-      violations -> Violation (Str.joinWith "; " violations)
+  , rule: \_context cstModule -> violations (overLongLines widths cstModule)
   }
 
 -- | Private. Used only by `maxLineLength`. Uses `tooWide`, `signatureLines`, `widthByLine`.

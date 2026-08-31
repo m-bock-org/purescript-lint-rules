@@ -4,13 +4,17 @@ import Prelude
 
 import Control.Monad.State (State, execState, modify_)
 import Data.Maybe (Maybe(..))
-import Data.String.Common (joinWith) as Str
 import Data.Tuple.Nested (type (/\), (/\))
 import PureScript.CST.Traversal (defaultVisitorWithContextM, rewriteDeclWithContextM)
 import PureScript.CST.Types (Declaration, Expr(..))
-import PureScript.Lint.Rule (DeclarationLint, LintResult(..), RuleName(..))
+import PureScript.Lint.Rule
+  ( DeclarationLint
+  , LintResult
+  , RuleName(..)
+  , violations
+  )
 
--- | Uses `violations`.
+-- | Uses `findings`.
 maxLambdaNestingDepth :: Int -> DeclarationLint
 maxLambdaNestingDepth maxDepth =
   { name: RuleName "max-lambda-nesting-depth"
@@ -18,18 +22,16 @@ maxLambdaNestingDepth maxDepth =
       "Flags a lambda nested more than the configured depth inside other lambdas in the same declaration."
   , goodExample: Just "\\a b c -> f a b c"
   , badExample: Just "\\a -> \\b -> \\c -> f a b c"
-  , rule: \_context decl -> case violations maxDepth decl of
-      [] -> Passed
-      vs -> Violation (Str.joinWith "; " vs)
+  , rule: \_context decl -> violations (findings maxDepth decl)
   }
 
 -- | Private. Used only by `maxLambdaNestingDepth`. Uses `onExpr`.
-violations :: Int -> Declaration Void -> Array String
-violations maxDepth decl = execState
+findings :: Int -> Declaration Void -> Array String
+findings maxDepth decl = execState
   (rewriteDeclWithContextM (defaultVisitorWithContextM { onExpr = onExpr maxDepth }) 0 decl)
   []
 
--- | Private, depth 2. Used only by `violations`.
+-- | Private, depth 2. Used only by `findings`.
 onExpr :: Int -> Int -> Expr Void -> State (Array String) (Int /\ Expr Void)
 onExpr maxDepth depth expr = case expr of
   ExprLambda _ -> do

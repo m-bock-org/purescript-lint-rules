@@ -15,7 +15,13 @@ import PureScript.CST.Types
   , Where(..)
   , Wrapped(..)
   )
-import PureScript.Lint.Rule (ExprLint, LintResult(..), RuleName(..))
+import PureScript.Lint.Rule
+  ( ExprLint
+  , LintResult
+  , RuleName(..)
+  , violation
+  , violations
+  )
 
 type SameConstructorArmConfig = { ctor :: String }
 
@@ -29,7 +35,7 @@ sameConstructorArm config =
   , badExample: Just "case m of\n  Just x -> Just (f x)\n  Nothing -> Nothing"
   , rule: \_context expr -> case expr of
       ExprCase { branches } | any (isSelfReconstructingArm config) branches ->
-        Violation
+        violation
           ( fold
               [ "a branch matching "
               , config.ctor
@@ -38,7 +44,7 @@ sameConstructorArm config =
               , " around its result - consider map/lmap/rmap/bimap, or do-notation"
               ]
           )
-      _ -> Passed
+      _ -> violations []
   }
 
 type CaseBranch = Separated (Binder Void) /\ Guarded Void

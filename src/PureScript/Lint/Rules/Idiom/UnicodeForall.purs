@@ -11,7 +11,13 @@ import PureScript.CST.Traversal
   , rewriteDeclBottomUp
   )
 import PureScript.CST.Types (Declaration, SourceStyle(..), SourceToken, Token(..), Type(..))
-import PureScript.Lint.Rule (DeclarationLint, LintResult(..), RuleName(..))
+import PureScript.Lint.Rule
+  ( DeclarationLint
+  , fixed
+  , LintResult
+  , RuleName(..)
+  , violations
+  )
 
 -- | Uses `hasAsciiForall`, `toUnicode`.
 unicodeForall :: DeclarationLint
@@ -21,7 +27,7 @@ unicodeForall =
   , goodExample: Just "identity :: \x2200 a. a -> a"
   , badExample: Just "identity :: forall a. a -> a"
   , rule: \_context decl ->
-      if hasAsciiForall decl then Fixed (toUnicode decl) else Passed
+      if hasAsciiForall decl then fixed (toUnicode decl) else violations []
   }
 
 -- | Private. Used only by `unicodeForall`. Uses `asciiForalls`.

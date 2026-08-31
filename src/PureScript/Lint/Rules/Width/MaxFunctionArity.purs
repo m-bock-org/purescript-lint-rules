@@ -6,7 +6,13 @@ import Data.Array (length) as Array
 import Data.Foldable (fold)
 import Data.Maybe (Maybe(..))
 import PureScript.CST.Types (Declaration(..), Ident(..), Name(..))
-import PureScript.Lint.Rule (DeclarationLint, LintResult(..), RuleName(..))
+import PureScript.Lint.Rule
+  ( DeclarationLint
+  , LintResult
+  , RuleName(..)
+  , violation
+  , violations
+  )
 
 maxFunctionArity :: Int -> DeclarationLint
 maxFunctionArity maxArity =
@@ -17,7 +23,7 @@ maxFunctionArity maxArity =
   , badExample: Just "resize width height quality img = ..."
   , rule: \_context decl -> case decl of
       DeclValue { name: Name { name: Ident n }, binders }
-        | Array.length binders > maxArity -> Violation $ fold
+        | Array.length binders > maxArity -> violation $ fold
             [ n
             , " takes "
             , show (Array.length binders)
@@ -25,7 +31,7 @@ maxFunctionArity maxArity =
             , show maxArity
             , " - group related ones into a record, or a tuple where they have no good names"
             ]
-      _ -> Passed
+      _ -> violations []
   }
 
 -- Context: `maxFunctionArity` flags a top-level function definition whose

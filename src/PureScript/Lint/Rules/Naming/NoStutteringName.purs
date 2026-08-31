@@ -20,7 +20,14 @@ import PureScript.CST.Types
   , QualifiedName(..)
   , Type(..)
   )
-import PureScript.Lint.Rule (LintResult(..), ModuleLint, RuleName(..))
+import PureScript.Lint.Rule
+  ( LintResult
+  , ModuleLint
+  , RuleName(..)
+  , violation
+  , violations
+  , withHint
+  )
 
 -- | Uses `report`, `stutters`.
 noStutteringName :: ModuleLint
@@ -84,15 +91,10 @@ unOperator (Operator n) = n
 
 -- | Private. Used only by `noStutteringName`.
 report :: ∀ a. Array String -> LintResult a
-report found
-  | Array.null found = Passed
-  | otherwise = Violation
-      ( fold
-          [ Str.joinWith ", " found
-          , " repeats the qualifier in the name - drop the prefix from the name,"
-          , " or import it unqualified"
-          ]
-      )
+report found = withHint hint
+  (violations (map (_ <> " repeats the qualifier in its own name") found))
+  where
+  hint = "drop the prefix from the name, or import it unqualified"
 
 -- ## Context
 --
