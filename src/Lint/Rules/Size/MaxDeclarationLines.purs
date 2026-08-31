@@ -1,10 +1,10 @@
-module PureScript.Lint.Rules.Size.MaxDeclarationLines (maxDeclarationLines) where
+module Lint.Rules.Size.MaxDeclarationLines (maxDeclarationLines) where
 
 import Prelude
 
 import Data.Maybe (Maybe(..))
 import PureScript.CST.Range (rangeOf)
-import PureScript.Lint.Rule (DeclarationLint, violations)
+import Lint.Rule (DeclarationLint, violations)
 
 maxDeclarationLines :: Int -> DeclarationLint
 maxDeclarationLines maxLines =

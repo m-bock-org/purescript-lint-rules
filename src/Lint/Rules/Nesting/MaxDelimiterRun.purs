@@ -1,4 +1,4 @@
-module PureScript.Lint.Rules.Nesting.MaxDelimiterRun (maxDelimiterRun) where
+module Lint.Rules.Nesting.MaxDelimiterRun (maxDelimiterRun) where
 
 import Prelude
 
@@ -9,7 +9,7 @@ import Data.Maybe (maybe) as Maybe
 import PureScript.CST.Range (tokensOf)
 import PureScript.CST.Range.TokenList (toArray) as TokenList
 import PureScript.CST.Types (Module, Token(..))
-import PureScript.Lint.Rule (ModuleLint, violations)
+import Lint.Rule (ModuleLint, violations)
 
 data Side = Opening | Closing
 

@@ -1,4 +1,4 @@
-module PureScript.Lint.Rules.Size.MaxLineLength (maxLineLength) where
+module Lint.Rules.Size.MaxLineLength (maxLineLength) where
 
 import Prelude
 
@@ -13,7 +13,7 @@ import Data.Tuple.Nested (type (/\), (/\))
 import PureScript.CST.Range (rangeOf, tokensOf)
 import PureScript.CST.Range.TokenList (toArray) as TokenList
 import PureScript.CST.Types (Declaration(..), Module(..), ModuleBody(..), SourceToken, Token(..))
-import PureScript.Lint.Rule (ModuleLint, violations)
+import Lint.Rule (ModuleLint, violations)
 
 type LineWidths = { code :: Int, signature :: Int }
 

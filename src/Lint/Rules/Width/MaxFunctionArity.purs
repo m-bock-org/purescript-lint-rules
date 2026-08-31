@@ -1,4 +1,4 @@
-module PureScript.Lint.Rules.Width.MaxFunctionArity (maxFunctionArity) where
+module Lint.Rules.Width.MaxFunctionArity (maxFunctionArity) where
 
 import Prelude
 
@@ -6,7 +6,7 @@ import Data.Array (length) as Array
 import Data.Foldable (fold)
 import Data.Maybe (Maybe(..))
 import PureScript.CST.Types (Declaration(..), Ident(..), Name(..))
-import PureScript.Lint.Rule (DeclarationLint, violations, withHint)
+import Lint.Rule (DeclarationLint, violations, withHint)
 
 maxFunctionArity :: Int -> DeclarationLint
 maxFunctionArity maxArity =

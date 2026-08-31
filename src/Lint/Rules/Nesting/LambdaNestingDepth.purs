@@ -1,4 +1,4 @@
-module PureScript.Lint.Rules.Nesting.LambdaNestingDepth (maxLambdaNestingDepth) where
+module Lint.Rules.Nesting.LambdaNestingDepth (maxLambdaNestingDepth) where
 
 import Prelude
 
@@ -7,7 +7,7 @@ import Data.Maybe (Maybe(..))
 import Data.Tuple.Nested (type (/\), (/\))
 import PureScript.CST.Traversal (defaultVisitorWithContextM, rewriteDeclWithContextM)
 import PureScript.CST.Types (Declaration, Expr(..))
-import PureScript.Lint.Rule (DeclarationLint, violations)
+import Lint.Rule (DeclarationLint, violations)
 
 maxLambdaNestingDepth :: Int -> DeclarationLint
 maxLambdaNestingDepth maxDepth =

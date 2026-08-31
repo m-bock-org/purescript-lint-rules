@@ -1,4 +1,4 @@
-module PureScript.Lint.Rules.Naming.NoStutteringName (noStutteringName) where
+module Lint.Rules.Naming.NoStutteringName (noStutteringName) where
 
 import Prelude
 
@@ -9,7 +9,7 @@ import Data.String (Pattern(..))
 import Data.String (stripPrefix) as Str
 import PureScript.CST.Traversal (defaultMonoidalVisitor, foldMapModule)
 import PureScript.CST.Types as CST
-import PureScript.Lint.Rule
+import Lint.Rule
   ( LintResult
   , ModuleLint
   , violations
