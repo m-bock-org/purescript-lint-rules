@@ -1,4 +1,4 @@
-module Lint.Rules.Size.MaxLineLength (maxLineLength) where
+module Lint.Rules.Width.MaxLineLength (maxLineLength) where
 
 import Prelude
 
@@ -22,8 +22,8 @@ maxLineLength widths =
   { name: "max-line-length"
   , description:
       "Flags a line over the configured width - a type signature gets its own, wider allowance than ordinary code."
-  , goodExamples: []
-  , badExamples: []
+  , goodExamples: [ "describe x =\n  \"value: \"\n    <> show x" ]
+  , badExamples: [ "describe x = \"value: \" <> show x <> \" and a good deal more\"" ]
   , rule: \_context cstModule -> violations (overLongLines widths cstModule)
   }
 

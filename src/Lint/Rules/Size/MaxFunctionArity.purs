@@ -1,4 +1,4 @@
-module Lint.Rules.Width.MaxFunctionArity (maxFunctionArity) where
+module Lint.Rules.Size.MaxFunctionArity (maxFunctionArity) where
 
 import Prelude
 
@@ -11,9 +11,9 @@ maxFunctionArity :: Int -> DeclarationLint
 maxFunctionArity maxArity =
   { name: "max-function-arity"
   , description:
-      "Flags a top-level function definition with more than the configured number of arguments."
-  , goodExamples: [ "resize { width, height, quality } img = ..." ]
-  , badExamples: [ "resize width height quality img = ..." ]
+      "Flags a top-level definition binding more parameters than the configured maximum. Counts the binders written in the equation, which need not match the arrows in its type."
+  , goodExamples: [ "resize { width, height, quality } img = img" ]
+  , badExamples: [ "resize width height quality img = img" ]
   , rule: \_context decl -> case decl of
       DeclValue { name: Name { name: Ident n }, binders }
         | Array.length binders > maxArity ->

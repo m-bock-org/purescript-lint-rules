@@ -13,9 +13,9 @@ import Effect (Effect)
 import Lint.Rules.Naming.NoStutteringName (noStutteringName)
 import Lint.Rules.Nesting.LambdaNestingDepth (maxLambdaNestingDepth)
 import Lint.Rules.Nesting.MaxDelimiterRun (maxDelimiterRun)
-import Lint.Rules.Size.MaxDeclarationLines (maxDeclarationLines)
-import Lint.Rules.Size.MaxLineLength (maxLineLength)
-import Lint.Rules.Width.MaxFunctionArity (maxFunctionArity)
+import Lint.Rules.Height.MaxDeclarationLines (maxDeclarationLines)
+import Lint.Rules.Width.MaxLineLength (maxLineLength)
+import Lint.Rules.Size.MaxFunctionArity (maxFunctionArity)
 import Effect.Class.Console (log)
 import Node.Encoding (Encoding(..))
 import Node.FS.Sync (readTextFile, readdir, writeTextFile)
@@ -63,14 +63,15 @@ groups =
     , modules: [ "MaxDelimiterRun", "LambdaNestingDepth" ]
     , rules: [ row (maxDelimiterRun 2), row (maxLambdaNestingDepth 1) ]
     }
-  , { group: "Size"
-    , modules: [ "MaxDeclarationLines", "MaxLineLength" ]
-    , rules:
-        [ row (maxDeclarationLines 40)
-        , row (maxLineLength { code: 100, signature: 150 })
-        ]
+  , { group: "Height"
+    , modules: [ "MaxDeclarationLines" ]
+    , rules: [ row (maxDeclarationLines 40) ]
     }
   , { group: "Width"
+    , modules: [ "MaxLineLength" ]
+    , rules: [ row (maxLineLength { code: 100, signature: 150 }) ]
+    }
+  , { group: "Size"
     , modules: [ "MaxFunctionArity" ]
     , rules: [ row (maxFunctionArity 4) ]
     }

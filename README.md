@@ -15,10 +15,10 @@ Flags a qualified name whose own name repeats its qualifier.
 
 ```purescript
 -- good
-Parser.Token
+parse :: Parser.Token -> Int
 
 -- bad
-Parser.ParserToken
+parse :: Parser.ParserToken -> Int
 ```
 
 ### Nesting
@@ -47,28 +47,53 @@ Flags a lambda nested anywhere inside more than the configured number of enclosi
 \xs -> map (\x -> f x) xs
 ```
 
-### Size
+### Height
 
 #### `max-declaration-lines`
 
 Flags a top-level declaration whose own source line span exceeds the configured maximum.
 
+```purescript
+-- good
+report r = header r <> body r
+
+-- bad
+report r =
+  let
+    h = header r
+    b = body r
+  in
+    h <> b
+```
+
+### Width
+
 #### `max-line-length`
 
 Flags a line over the configured width - a type signature gets its own, wider allowance than ordinary code.
 
-### Width
+```purescript
+-- good
+describe x =
+  "value: "
+    <> show x
+
+-- bad
+describe x = "value: " <> show x <> " and a good deal more"
+```
+
+### Size
 
 #### `max-function-arity`
 
-Flags a top-level function definition with more than the configured number of arguments.
+Flags a top-level definition binding more parameters than the configured maximum. Counts the binders written in the equation, which need not match the arrows in its type.
 
 ```purescript
 -- good
-resize { width, height, quality } img = ...
+resize { width, height, quality } img = img
 
 -- bad
-resize width height quality img = ...
+resize width height quality img = img
 ```
 
 <!-- /RULES -->

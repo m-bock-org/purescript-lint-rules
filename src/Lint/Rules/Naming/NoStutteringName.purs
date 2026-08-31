@@ -21,8 +21,8 @@ noStutteringName =
   { name: "no-stuttering-name"
   , description:
       "Flags a qualified name whose own name repeats its qualifier."
-  , goodExamples: [ "Parser.Token" ]
-  , badExamples: [ "Parser.ParserToken" ]
+  , goodExamples: [ "parse :: Parser.Token -> Int" ]
+  , badExamples: [ "parse :: Parser.ParserToken -> Int" ]
   , rule: \_context cstModule -> report (Array.nub (stutters cstModule))
   }
 
