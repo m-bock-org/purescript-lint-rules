@@ -1,0 +1,45 @@
+package:
+  name: lint-purs-rules
+  description: A set of general-purpose lint rules for the lint-purs engine.
+  publish:
+    version: 0.1.0
+    license: MIT
+    location:
+      githubOwner: m-bock
+      githubRepo: purescript-lint-rules
+  dependencies:
+    - arrays
+    - foldable-traversable
+    - language-cst-parser
+    - lint-purs
+    - maybe
+    - ordered-collections
+    - prelude
+    - strings
+    - transformers
+    - tuples
+workspace:
+  packageSet:
+    registry: 66.9.0
+  extraPackages:
+    lint-purs:
+      path: ../purescript-lint
+    encode-decode:
+      git: https://github.com/m-bock/purescript-encode-decode.git
+      ref: 07a361b0e42314ee6521b8ccc774eca117be57d0
+      dependencies:
+        - argonaut-core
+        - argonaut-codecs
+        - arrays
+        - contravariant
+        - either
+        - foldable-traversable
+        - foreign-object
+        - heterogeneous
+        - maybe
+        - ordered-collections
+        - prelude
+        - record
+        - transformers
+        - tuples
+        - typelevel-prelude

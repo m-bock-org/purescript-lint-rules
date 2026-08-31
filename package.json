@@ -1,0 +1,20 @@
+{
+  "name": "purescript-lint-rules",
+  "version": "0.1.0",
+  "description": "A set of general-purpose lint rules for the purescript-lint engine.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/m-bock/purescript-lint-rules.git"
+  },
+  "author": "Michael Bock",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/m-bock/purescript-lint-rules/issues"
+  },
+  "homepage": "https://github.com/m-bock/purescript-lint-rules#readme",
+  "devDependencies": {
+    "purescript": "^0.15.15",
+    "purs-tidy": "^0.11.0",
+    "spago": "^1.0.4"
+  }
+}
