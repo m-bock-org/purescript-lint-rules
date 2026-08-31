@@ -4,7 +4,7 @@ module Test.Docs (main) where
 
 import Prelude
 
-import Data.Array (concat, concatMap, difference, fold, null) as Array
+import Data.Array (concat, concatMap, difference, filter, fold, intercalate, null) as Array
 import Data.Foldable (for_)
 import Data.String (Pattern(..), Replacement(..), replace, split) as Str
 import Data.Traversable (for)
@@ -21,10 +21,34 @@ import Node.Encoding (Encoding(..))
 import Node.FS.Sync (readTextFile, readdir, writeTextFile)
 import Node.Process (exit')
 
-type Described r = { name :: String, description :: String | r }
+type Described r =
+  { name :: String
+  , description :: String
+  , goodExamples :: Array String
+  , badExamples :: Array String
+  | r
+  }
 
+-- | One rule: its name, what it flags, and an example of each side.
 row :: forall r. Described r -> String
-row r = Array.fold [ "| `", r.name, "` | ", r.description, " |" ]
+row r = Str.joinWith "\n"
+  ( [ "#### `" <> r.name <> "`", "", r.description ] <> examples r )
+
+examples :: forall r. Described r -> Array String
+examples r =
+  let
+    blocks = Array.filter (not <<< Array.null)
+      [ labelled "-- good" r.goodExamples, labelled "-- bad" r.badExamples ]
+  in
+    if Array.null blocks then []
+    else [ "", "```purescript" ]
+      <> Array.intercalate [ "" ] blocks
+      <> [ "```" ]
+
+labelled :: String -> Array String -> Array String
+labelled label xs
+  | Array.null xs = []
+  | otherwise = [ label ] <> xs
 
 -- | Mirrors the module layout: one section per `Lint.Rules.<Group>`.
 -- | `modules` is what each entry claims to document, checked against
@@ -53,8 +77,7 @@ groups =
   ]
 
 section :: forall r. { group :: String, rules :: Array String | r } -> String
-section { group, rules } = Str.joinWith "\n"
-  ([ "### " <> group, "", "| | |", "|---|---|" ] <> rules)
+section { group, rules } = Str.joinWith "\n\n" ([ "### " <> group ] <> rules)
 
 table :: String
 table = Str.joinWith "\n\n" (map section groups)
