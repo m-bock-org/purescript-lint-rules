@@ -23,7 +23,10 @@
           "dependencies": [
             "aff",
             "effect",
-            "node-process"
+            "node-buffer",
+            "node-fs",
+            "node-process",
+            "strings"
           ]
         }
       }

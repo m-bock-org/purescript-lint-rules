@@ -25,7 +25,10 @@ package:
     dependencies:
       - aff
       - effect
+      - node-buffer
+      - node-fs
       - node-process
+      - strings
 workspace:
   packageSet:
     registry: 66.9.0

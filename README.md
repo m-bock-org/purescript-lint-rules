@@ -5,14 +5,35 @@ A set of general-purpose lint rules for the
 
 ## The rules
 
+<!-- RULES -->
+
+### Naming
+
 | | |
 |---|---|
-| `noStutteringName` | Flags a qualified name whose own name repeats its qualifier. |
-| `maxLambdaNestingDepth` | Flags a lambda nested anywhere inside more than the configured number of enclosing lambdas. |
-| `maxDelimiterRun` | Flags more than the configured number of brackets opening or closing in immediate succession. |
-| `maxDeclarationLines` | Flags a top-level declaration whose own source line span exceeds the configured maximum. |
-| `maxLineLength` | Flags a line over the configured width - a type signature gets its own, wider allowance than ordinary code. |
-| `maxFunctionArity` | Flags a top-level function definition with more than the configured number of arguments. |
+| `no-stuttering-name` | Flags a qualified name whose own name repeats its qualifier. |
+
+### Nesting
+
+| | |
+|---|---|
+| `max-delimiter-run` | Flags more than the configured number of brackets opening or closing in immediate succession. |
+| `max-lambda-nesting-depth` | Flags a lambda nested anywhere inside more than the configured number of enclosing lambdas. |
+
+### Size
+
+| | |
+|---|---|
+| `max-declaration-lines` | Flags a top-level declaration whose own source line span exceeds the configured maximum. |
+| `max-line-length` | Flags a line over the configured width - a type signature gets its own, wider allowance than ordinary code. |
+
+### Width
+
+| | |
+|---|---|
+| `max-function-arity` | Flags a top-level function definition with more than the configured number of arguments. |
+
+<!-- /RULES -->
 
 Each lives in its own module, `Lint.Rules.<Group>.<Name>`.
 

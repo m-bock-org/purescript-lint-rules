@@ -26,5 +26,11 @@ jobs:
       run: npx spago build --strict
 
 
+    - name: README is in sync with the rules
+      run: |
+        cp README.md /tmp/README.before
+        npx spago test -m Test.Docs
+        diff -u /tmp/README.before README.md
+
     - name: Lint
       run: npx spago test -m Test.Lint
