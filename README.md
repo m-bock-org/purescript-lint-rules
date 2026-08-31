@@ -19,7 +19,7 @@ import PureScript.Lint.Rules.Nesting.MaxCallStackDepth (maxCallStackDepth)
 | `maxLineLength` | module | `{ code, signature }` | A line over the configured width. Signatures get their own, wider budget, because a type that does not fit is usually saying something true. |
 | `maxDelimiterRun` | module | `Int` | More brackets opening or closing in immediate succession than allowed. A blunt proxy for "too much going on in one expression". |
 | `maxCallStackDepth` | module | `Int` | A function whose longest chain of calls through your *own* functions exceeds the limit. |
-| `noStutteringName` | module | – | A qualified name repeating its qualifier: `Kraken.KrakenPair` rather than `Kraken.Pair`. |
+| `noStutteringName` | module | – | A qualified name repeating its qualifier: `Parser.ParserToken` rather than `Parser.Token`. |
 | `maxDeclarationLines` | declaration | `Int` | A top-level declaration whose own source span is too long. The one blind spot the nesting rules cannot catch: long, flat and shallow. |
 | `maxLambdaNestingDepth` | declaration | `Int` | A lambda nested inside too many other lambdas in one declaration. |
 | `maxFunctionArity` | declaration | `Int` | A top-level function taking more arguments than allowed. |

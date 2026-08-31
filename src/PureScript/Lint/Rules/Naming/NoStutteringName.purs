@@ -20,9 +20,9 @@ noStutteringName :: ModuleLint
 noStutteringName =
   { name: "no-stuttering-name"
   , description:
-      "Flags a qualified name whose own name repeats its qualifier, like `Kraken.KrakenPair`."
-  , goodExample: Just "Kraken.Pair"
-  , badExample: Just "Kraken.KrakenPair"
+      "Flags a qualified name whose own name repeats its qualifier."
+  , goodExample: Just "Parser.Token"
+  , badExample: Just "Parser.ParserToken"
   , rule: \_context cstModule -> report (Array.nub (stutters cstModule))
   }
 
