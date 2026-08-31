@@ -41,14 +41,15 @@ examples r = case r.examples of
   Nothing -> []
   Just shown ->
     let
+      setting = Maybe.maybe []
+        (\c -> [ "", "Read against `" <> c <> "`." ])
+        (shown.printConfig shown.config)
       blocks = Array.filter (not <<< Array.null)
-        [ Maybe.maybe [] (\c -> [ "-- with " <> c ]) (shown.printConfig shown.config)
-        , labelled "-- good" shown.good
-        , labelled "-- bad" shown.bad
-        ]
+        [ labelled "-- good" shown.good, labelled "-- bad" shown.bad ]
     in
       if Array.null blocks then []
-      else [ "", "```purescript" ]
+      else setting
+        <> [ "", "```purescript" ]
         <> Array.intercalate [ "" ] blocks
         <> [ "```" ]
 

@@ -46,9 +46,9 @@ Parser.ParserToken
 
 Flags more than the configured number of brackets opening or closing in immediate succession.
 
-```purescript
--- with a run of 2
+Read against `a run of 2`.
 
+```purescript
 -- good
 f $ g (h (i x))
 
@@ -60,9 +60,9 @@ f (g (h (i x)))
 
 Flags a lambda nested anywhere inside more than the configured number of enclosing lambdas.
 
-```purescript
--- with a depth of 2
+Read against `a depth of 2`.
 
+```purescript
 -- good
 \xs -> map (\x -> f x) xs
 
@@ -76,9 +76,9 @@ Flags a lambda nested anywhere inside more than the configured number of enclosi
 
 Flags a top-level declaration whose own source line span exceeds the configured maximum.
 
-```purescript
--- with 5 lines
+Read against `5 lines`.
 
+```purescript
 -- good
 report r = header r <> body r
 
@@ -97,9 +97,9 @@ report r =
 
 Flags a line over the configured width - a type signature gets its own, wider allowance than ordinary code.
 
-```purescript
--- with { code: 100, signature: 150 }
+Read against `{ code: 100, signature: 150 }`.
 
+```purescript
 -- good
 describe x =
   "value: " <> show x
@@ -116,9 +116,9 @@ describe x = "value: " <> show x <> " (" <> show (length x) <> " items, " <> sho
 
 Flags a top-level definition binding more parameters than the configured maximum. Counts the binders written in the equation, which need not match the arrows in its type.
 
-```purescript
--- with max arity 3
+Read against `max arity 3`.
 
+```purescript
 -- good
 resize { width, height, quality } img = img
 
