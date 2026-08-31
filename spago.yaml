@@ -9,10 +9,12 @@ package:
       githubRepo: purescript-lint-rules
   dependencies:
     - arrays
+    - const
     - foldable-traversable
     - language-cst-parser
     - lint-purs
     - maybe
+    - newtype
     - ordered-collections
     - prelude
     - strings
