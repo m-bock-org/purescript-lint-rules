@@ -4,7 +4,7 @@ module Test.Docs (main) where
 
 import Prelude
 
-import Data.Array (concat, concatMap, difference, filter, fold, intercalate, null) as Array
+import Data.Array (concat, concatMap, difference, fold, null) as Array
 import Data.Foldable (for_)
 import Data.Maybe (Maybe(..))
 import Data.Maybe (maybe) as Maybe
@@ -39,19 +39,17 @@ row r = Str.joinWith "\n"
 examples :: forall cfg r. Described cfg r -> Array String
 examples r = case r.examples of
   Nothing -> []
-  Just shown ->
-    let
-      setting = Maybe.maybe []
-        (\c -> [ "", "Read against `" <> c <> "`." ])
-        (shown.printConfig shown.config)
-      blocks = Array.filter (not <<< Array.null)
-        [ labelled "-- good" shown.good, labelled "-- bad" shown.bad ]
-    in
-      if Array.null blocks then []
-      else setting
-        <> [ "", "```purescript" ]
-        <> Array.intercalate [ "" ] blocks
-        <> [ "```" ]
+  Just shown -> Array.concat
+    [ Maybe.maybe [] (\c -> fenced [ "-- " <> c ]) (shown.printConfig shown.config)
+    , fenced (labelled "-- good" shown.good)
+    , fenced (labelled "-- bad" shown.bad)
+    ]
+
+-- | One block, or nothing where there is nothing to show.
+fenced :: Array String -> Array String
+fenced lines
+  | Array.null lines = []
+  | otherwise = [ "", "```purescript" ] <> lines <> [ "```" ]
 
 labelled :: String -> Array String -> Array String
 labelled label xs
