@@ -14,8 +14,8 @@ maxLambdaNestingDepth maxDepth =
   { name: "max-lambda-nesting-depth"
   , description:
       "Flags a lambda nested anywhere inside more than the configured number of enclosing lambdas."
-  , goodExample: Just "\\xs -> map f xs"
-  , badExample: Just "\\xs -> map (\\x -> f x) xs"
+  , goodExamples: [ "\\xs -> map f xs" ]
+  , badExamples: [ "\\xs -> map (\\x -> f x) xs" ]
   , rule: \_context decl -> violations (findings maxDepth decl)
   }
 

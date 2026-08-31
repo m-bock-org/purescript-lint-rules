@@ -22,8 +22,8 @@ maxLineLength widths =
   { name: "max-line-length"
   , description:
       "Flags a line over the configured width - a type signature gets its own, wider allowance than ordinary code."
-  , goodExample: Nothing
-  , badExample: Nothing
+  , goodExamples: []
+  , badExamples: []
   , rule: \_context cstModule -> violations (overLongLines widths cstModule)
   }
 

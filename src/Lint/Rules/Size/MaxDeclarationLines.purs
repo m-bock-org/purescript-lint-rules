@@ -11,8 +11,8 @@ maxDeclarationLines maxLines =
   { name: "max-declaration-lines"
   , description:
       "Flags a top-level declaration whose own source line span exceeds the configured maximum."
-  , goodExample: Nothing
-  , badExample: Nothing
+  , goodExamples: []
+  , badExamples: []
   , rule: \_context decl ->
       let
         range = rangeOf decl
