@@ -7,7 +7,7 @@ A set of general-purpose lint rules for the
 
 ## Naming
 
-### `no-stuttering-name`
+### ● `no-stuttering-name`
 
 Flags a qualified name whose own name repeats its qualifier.
 
@@ -21,7 +21,7 @@ parse :: Parser.ParserToken -> Int
 
 ## Nesting
 
-### `max-delimiter-run`
+### ● `max-delimiter-run`
 
 Flags more than the configured number of brackets opening or closing in immediate succession.
 
@@ -33,7 +33,7 @@ f $ g (h (i x))
 f (g (h (i x)))
 ```
 
-### `max-lambda-nesting-depth`
+### ● `max-lambda-nesting-depth`
 
 Flags a lambda nested anywhere inside more than the configured number of enclosing lambdas.
 
@@ -47,7 +47,7 @@ Flags a lambda nested anywhere inside more than the configured number of enclosi
 
 ## Height
 
-### `max-declaration-lines`
+### ● `max-declaration-lines`
 
 Flags a top-level declaration whose own source line span exceeds the configured maximum.
 
@@ -66,7 +66,7 @@ report r =
 
 ## Width
 
-### `max-line-length`
+### ● `max-line-length`
 
 Flags a line over the configured width - a type signature gets its own, wider allowance than ordinary code.
 
@@ -82,7 +82,7 @@ describe x = "value: " <> show x <> " and a good deal more"
 
 ## Size
 
-### `max-function-arity`
+### ● `max-function-arity`
 
 Flags a top-level definition binding more parameters than the configured maximum. Counts the binders written in the equation, which need not match the arrows in its type.
 
