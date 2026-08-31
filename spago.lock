@@ -584,50 +584,11 @@
     "extra_packages": {
       "encode-decode": {
         "git": "https://github.com/m-bock/purescript-encode-decode.git",
-        "ref": "07a361b0e42314ee6521b8ccc774eca117be57d0",
-        "dependencies": [
-          "argonaut-codecs",
-          "argonaut-core",
-          "arrays",
-          "contravariant",
-          "either",
-          "foldable-traversable",
-          "foreign-object",
-          "heterogeneous",
-          "maybe",
-          "ordered-collections",
-          "prelude",
-          "record",
-          "transformers",
-          "tuples",
-          "typelevel-prelude"
-        ]
+        "ref": "07a361b0e42314ee6521b8ccc774eca117be57d0"
       },
       "lint-purs": {
         "git": "https://github.com/m-bock/purescript-lint.git",
-        "ref": "8a66e34f5bb28954f0f3f657012a243e3e4258b1",
-        "dependencies": [
-          "aff",
-          "arrays",
-          "console",
-          "effect",
-          "either",
-          "encode-decode",
-          "foldable-traversable",
-          "foreign-object",
-          "language-cst-parser",
-          "maybe",
-          "node-buffer",
-          "node-child-process",
-          "node-fs",
-          "node-glob-basic",
-          "node-path",
-          "ordered-collections",
-          "prelude",
-          "strings",
-          "transformers",
-          "tuples"
-        ]
+        "ref": "8a66e34f5bb28954f0f3f657012a243e3e4258b1"
       }
     }
   },
@@ -858,9 +819,8 @@
         "ordered-collections",
         "prelude",
         "record",
-        "transformers",
-        "tuples",
-        "typelevel-prelude"
+        "strings",
+        "tuples"
       ]
     },
     "enums": {
