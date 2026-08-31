@@ -58,7 +58,6 @@ bindingName = case _ of
   TopLevelBinding n -> n
   LocalBinding { name } -> name
 
--- | Uses `callableDeclName`, `valueBindingReferences`, `identName`.
 moduleReferences :: Module Void -> Array Reference
 moduleReferences (Module { body: ModuleBody { decls } }) =
   let
@@ -76,13 +75,11 @@ moduleReferences (Module { body: ModuleBody { decls } }) =
       )
       decls
 
--- | Private. Used only by `moduleReferences`. Uses `callableName`.
 callableDeclName :: Array (Declaration Void) -> Declaration Void -> Maybe String
 callableDeclName decls = case _ of
   DeclValue fields -> callableName decls fields
   _ -> Nothing
 
--- | Private, depth 2. Used only by `callableDeclName`. Uses `identName`, `isCallable`,
 -- | `isFunctionType`, `signatureOf`.
 callableName :: Array (Declaration Void) -> ValueBindingFields Void -> Maybe String
 callableName decls fields =
@@ -92,7 +89,6 @@ callableName decls fields =
   in
     if callable then Just name else Nothing
 
--- | Private, depth 3. Used only by `callableName`.
 signatureOf :: Array (Declaration Void) -> String -> Maybe (Type Void)
 signatureOf decls name = Array.head $ Array.mapMaybe
   ( case _ of
@@ -102,7 +98,6 @@ signatureOf decls name = Array.head $ Array.mapMaybe
   )
   decls
 
--- | Private, depth 3. Used only by `callableName`.
 isFunctionType :: Type Void -> Boolean
 isFunctionType = case _ of
   TypeArrow _ _ _ -> true
@@ -112,16 +107,13 @@ isFunctionType = case _ of
   TypeParens (Wrapped { value }) -> isFunctionType value
   _ -> false
 
--- | Private.
 identName :: Name Ident -> String
 identName (Name { name: Ident n }) = n
 
--- | Private.
 localIdOf :: Name Ident -> BindingId
 localIdOf (Name { token, name: Ident n }) = LocalBinding
   { name: n, line: token.range.start.line, column: token.range.start.column }
 
--- | Private.
 binderNames :: Binder Void -> Array String
 binderNames = foldMapBinder
   ( defaultMonoidalVisitor
@@ -132,22 +124,18 @@ binderNames = foldMapBinder
       }
   )
 
--- | Private. Used only by `exprReferences`. Uses `binderNames`.
 lambdaNames :: NonEmptyArray (Binder Void) -> Array String
 lambdaNames binders = Array.concatMap binderNames (NEA.toArray binders)
 
--- | Private.
 shadowAll :: Array String -> Scope -> Scope
 shadowAll names scope = Array.foldl (flip Map.delete) scope names
 
--- | Private. Uses `guardedReferences`, `shadowAll`, `binderNames`.
 valueBindingReferences :: Scope -> BindingId -> ValueBindingFields Void -> Array Reference
 valueBindingReferences scope current fields =
   guardedReferences (shadowAll (Array.concatMap binderNames fields.binders) scope)
     current
     fields.guarded
 
--- | Private. Used only by `guardedReferences`. Uses `patternGuardScope`, `patternGuardRefs`,
 -- | `whereReferences`.
 guardedExprReferences :: Scope -> BindingId -> GuardedExpr Void -> Array Reference
 guardedExprReferences scope current (GuardedExpr g) =
@@ -161,23 +149,19 @@ guardedExprReferences scope current (GuardedExpr g) =
   in
     seeded.refs <> whereReferences seeded.scope current g.where
 
--- | Private, depth 2. Used only by `guardedExprReferences`. Uses `exprReferences`.
 patternGuardRefs :: BindingId -> Scope -> PatternGuard Void -> Array Reference
 patternGuardRefs current sc (PatternGuard { expr }) = exprReferences sc current expr
 
--- | Private, depth 2. Used only by `guardedExprReferences`. Uses `shadowAll`, `binderNames`.
 patternGuardScope :: Scope -> PatternGuard Void -> Scope
 patternGuardScope sc (PatternGuard { binder }) =
   Maybe.maybe sc (\(Tuple b _) -> shadowAll (binderNames b) sc) binder
 
--- | Private. Uses `whereReferences`, `guardedExprReferences`.
 guardedReferences :: Scope -> BindingId -> Guarded Void -> Array Reference
 guardedReferences scope current =
   case _ of
     Unconditional _ w -> whereReferences scope current w
     Guarded ges -> Array.concatMap (guardedExprReferences scope current) (NEA.toArray ges)
 
--- | Private. Uses `exprReferences`, `extendWithLetBindings`, `letBindingReferences`.
 whereReferences :: Scope -> BindingId -> Where Void -> Array Reference
 whereReferences scope current (Where { expr, bindings }) = Maybe.maybe
   (exprReferences scope current expr)
@@ -189,11 +173,9 @@ whereReferences scope current (Where { expr, bindings }) = Maybe.maybe
   )
   bindings
 
--- | Private.
 isCallable :: ValueBindingFields Void -> Boolean
 isCallable fields = not (Array.null fields.binders)
 
--- | Private. Uses `isCallable`, `identName`, `localIdOf`, `shadowAll`, `binderNames`.
 extendWithLetBindings :: Scope -> Array (LetBinding Void) -> Scope
 extendWithLetBindings = Array.foldl
   ( \scope -> case _ of
@@ -204,7 +186,6 @@ extendWithLetBindings = Array.foldl
       _ -> scope
   )
 
--- | Private. Uses `isCallable`, `valueBindingReferences`, `localIdOf`, `whereReferences`.
 letBindingReferences :: Scope -> BindingId -> Array (LetBinding Void) -> Array Reference
 letBindingReferences scope current = Array.concatMap case _ of
   LetBindingName fields
@@ -215,7 +196,6 @@ letBindingReferences scope current = Array.concatMap case _ of
 
 type CaseBranch = Separated (Binder Void) /\ Guarded Void
 
--- | Private. Used only by `exprReferences`. Uses `binderNames`, `guardedReferences`, `shadowAll`.
 branchReferences :: Scope -> BindingId -> CaseBranch -> Array Reference
 branchReferences scope current (Separated { head: b, tail: bt } /\ guarded) =
   let
@@ -223,7 +203,6 @@ branchReferences scope current (Separated { head: b, tail: bt } /\ guarded) =
   in
     guardedReferences (shadowAll names scope) current guarded
 
--- | Private. Uses `extendWithLetBindings`, `letBindingReferences`, `shadowAll`, `lambdaNames`,
 -- | `branchReferences`, `doReferences`.
 exprReferences :: Scope -> BindingId -> Expr Void -> Array Reference
 exprReferences scope current expr = case expr of
@@ -259,14 +238,12 @@ exprReferences scope current expr = case expr of
         other
     )
 
--- | Private. Used only by `exprReferences`. Uses `doStatementStep`.
 doReferences :: Scope -> BindingId -> Array (DoStatement Void) -> Array Reference
 doReferences scope current statements =
   (Array.foldl (doStatementStep current) { scope, refs: [] } statements).refs
 
 type ScopeAcc = { scope :: Scope, refs :: Array Reference }
 
--- | Private, depth 2. Used only by `doReferences`. Uses `exprReferences`, `shadowAll`,
 -- | `binderNames`, `letStatementStep`.
 doStatementStep :: BindingId -> ScopeAcc -> DoStatement Void -> ScopeAcc
 doStatementStep current acc = case _ of
@@ -278,7 +255,6 @@ doStatementStep current acc = case _ of
   DoLet _ bs -> letStatementStep current acc (NEA.toArray bs)
   _ -> acc
 
--- | Private, depth 3. Used only by `doStatementStep`. Uses `extendWithLetBindings`,
 -- | `letBindingReferences`.
 letStatementStep :: BindingId -> ScopeAcc -> Array (LetBinding Void) -> ScopeAcc
 letStatementStep current acc bs =
@@ -286,79 +262,3 @@ letStatementStep current acc bs =
     inner = extendWithLetBindings acc.scope bs
   in
     acc { scope = inner, refs = acc.refs <> letBindingReferences inner current bs }
-
--- ## Context
---
--- A scope-correct resolver from every identifier *reference* in a module
--- to the *binding* it actually refers to - deliberately generic CST
--- machinery, not tied to any one rule. `PureScript.Lint.Rules.Nesting.MaxCallStackDepth` is
--- its first consumer (it folds the references into a call graph), but
--- nothing here knows about call graphs, depth, or linting; an
--- unused-binding or accidental-shadowing rule would use the same output.
---
--- Exists because name-based matching is wrong in two ways that both
--- showed up live (2026-08-28). First, a *parameter* named the same as a
--- `let`/`where` binding elsewhere in the same declaration produced a
--- phantom edge - `SingleExport`'s `wrongExportsMessage moduleName`
--- appeared to "call" the unrelated `let`-bound `moduleName`, inflating
--- its reported chain by two hops. Second, two different `let` blocks in
--- one declaration that each bind the same name (`go`, `step`, ...) were
--- indistinguishable, silently merging two unrelated bindings into one
--- node. `BindingId` fixes the second by identifying a local binding by
--- its own source position rather than its name; the scope threading
--- fixes the first.
---
--- `Scope` is one flat `Map String BindingId` seeded with every top-level
--- name in the module, and shadowing is *deletion* from it. That's what
--- lets a parameter correctly shadow both a local binding and a
--- same-named top-level function - a design with a separate "locals" map
--- and a top-level fallback set can't express that, which is exactly the
--- bug this replaces. Names bound by something that isn't itself a
--- referenceable binding (function parameters, lambda binders, case
--- binders, `do` binds, pattern `let`s) are deleted rather than inserted:
--- a reference to one resolves to no binding at all, which is correct -
--- it names a value, not a definition anything can call.
---
--- Scoping is precise rather than approximate in the places where the
--- two differ: `case` binders scope to their own branch only (not to
--- sibling branches or the scrutinee), `do` binds scope only to
--- statements *after* them (`doReferences` threads left to right), and
--- `let`/`where` bindings are mutually visible before any right-hand side
--- is walked, matching PureScript's actual recursive-let semantics.
--- `valueBindingReferences` shadows a binding's own parameters within its
--- body, then walks its right-hand side with `current` set to that
--- binding, so references found there are attributed to it rather than to
--- whatever encloses it.
---
--- None of this is redundant with PureScript's own `ShadowedName`
--- warning, which is on by default and does fire in this repo. That
--- warning catches an inner binder hiding an *in-scope* outer name; the
--- bug that motivated this module was the opposite shape - two bindings
--- in *disjoint* scopes that merely share a spelling (`SingleExport`'s
--- `wrongExportsMessage moduleName` parameter versus an unrelated
--- `let`-bound `moduleName` inside a sibling field's lambda). Nothing is
--- shadowed there, the compiler is right to stay quiet, and only real
--- scope resolution can tell the two apart. The shadowing handling here
--- earns its place separately, since shadowing is warned but permitted.
---
--- The traversal leans on `PureScript.CST.Traversal.traverseExpr`, which
--- visits an expression's *immediate* children only. That's what keeps
--- this small: only the constructors that bind or scope something need
--- handling by hand, and every other constructor falls through to one
--- generic line. `Const (Array Reference)` supplies the accumulating
--- Applicative that traversal needs, so nothing is rebuilt.
---
--- Only `DeclValue` declarations are walked - a class method signature or
--- data declaration has no expression body to find references in.
---
--- A binding with no parameters is a *value*, not a node: reading it is a
--- lookup, not a call, so it neither costs a hop nor appears in the
--- graph, and its own references pass through to whatever encloses it.
--- Locally that is decided by `isCallable` alone. At top level the
--- binder count is not enough, because a point-free definition
--- (`rawComment = case _ of ...`) has no binders and is unmistakably a
--- function - 36 of them in this repo would have been misread as values.
--- The type signature settles it: no binders *and* a non-function type
--- means a value. Without that distinction every module paid a hop for
--- reading its own `tag = Tag "trade"` constant, which made the rule
--- measure something other than call depth.

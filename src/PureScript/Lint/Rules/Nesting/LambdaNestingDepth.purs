@@ -10,14 +10,12 @@ import PureScript.CST.Types (Declaration, Expr(..))
 import PureScript.Lint.Rule
   ( DeclarationLint
   , LintResult
-  , RuleName(..)
   , violations
   )
 
--- | Uses `findings`.
 maxLambdaNestingDepth :: Int -> DeclarationLint
 maxLambdaNestingDepth maxDepth =
-  { name: RuleName "max-lambda-nesting-depth"
+  { name: "max-lambda-nesting-depth"
   , description:
       "Flags a lambda nested more than the configured depth inside other lambdas in the same declaration."
   , goodExample: Just "\\a b c -> f a b c"
@@ -25,13 +23,11 @@ maxLambdaNestingDepth maxDepth =
   , rule: \_context decl -> violations (findings maxDepth decl)
   }
 
--- | Private. Used only by `maxLambdaNestingDepth`. Uses `onExpr`.
 findings :: Int -> Declaration Void -> Array String
 findings maxDepth decl = execState
   (rewriteDeclWithContextM (defaultVisitorWithContextM { onExpr = onExpr maxDepth }) 0 decl)
   []
 
--- | Private, depth 2. Used only by `findings`.
 onExpr :: Int -> Int -> Expr Void -> State (Array String) (Int /\ Expr Void)
 onExpr maxDepth depth expr = case expr of
   ExprLambda _ -> do
@@ -40,16 +36,3 @@ onExpr maxDepth depth expr = case expr of
       (_ <> [ "lambda nested " <> show depth' <> " deep, over the max of " <> show maxDepth ])
     pure (depth' /\ expr)
   _ -> pure (depth /\ expr)
-
--- Context: `maxLambdaNestingDepth` flags any lambda (`\x -> ...`) nested
--- more than `maxDepth` levels inside other lambdas within the same
--- declaration - same "hard to follow, consider extracting a helper"
--- reasoning as `PureScript.Lint.Rules.BranchNestingDepth`, kept as a separate rule
--- and a separate counter rather than merged into it: a lambda and a
--- branch point are different costs to a reader (closing over outer
--- arguments vs. following a decision), so conflating their depths would
--- hide which kind of nesting is actually the problem when one fires.
--- Same depth/traversal mechanics as `BranchNestingDepth` otherwise -
--- resets per top-level declaration, threads top-down via
--- `rewriteDeclWithContextM`, flags every offending lambda, not just the
--- first past the limit.
