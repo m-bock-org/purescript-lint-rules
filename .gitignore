@@ -2,3 +2,4 @@ output/
 .spago/
 node_modules/
 .vscode/.toolchain
+.direnv/
