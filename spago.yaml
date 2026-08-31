@@ -31,7 +31,29 @@ workspace:
     registry: 66.9.0
   extraPackages:
     lint-purs:
-      path: ../purescript-lint
+      git: https://github.com/m-bock/purescript-lint.git
+      ref: b04cae65650a89e1972f20dce3a5f8f59c5c73c0
+      dependencies:
+        - aff
+        - arrays
+        - console
+        - effect
+        - either
+        - encode-decode
+        - foldable-traversable
+        - foreign-object
+        - language-cst-parser
+        - maybe
+        - node-buffer
+        - node-child-process
+        - node-fs
+        - node-glob-basic
+        - node-path
+        - ordered-collections
+        - prelude
+        - strings
+        - transformers
+        - tuples
     encode-decode:
       git: https://github.com/m-bock/purescript-encode-decode.git
       ref: 07a361b0e42314ee6521b8ccc774eca117be57d0
