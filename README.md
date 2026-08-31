@@ -3,29 +3,18 @@
 A set of general-purpose lint rules for the
 [`purescript-lint`](https://github.com/m-bock/purescript-lint) engine.
 
-The engine ships with none. This is a starting set to write your own rule
-set from: six rules that each fit on a screen and hold an opinion most
-people already share.
-
-```purescript
-import Lint.Rules.Size.MaxLineLength (maxLineLength)
-import Lint.Rules.Width.MaxFunctionArity (maxFunctionArity)
-```
-
 ## The rules
 
-| Rule | Scope | Config | Flags |
-|---|---|---|---|
-| `maxLineLength` | module | `{ code, signature }` | A line over the configured width. Signatures get their own, wider budget, because a type that does not fit is usually saying something true. |
-| `maxDelimiterRun` | module | `Int` | More brackets opening or closing in immediate succession than allowed. A blunt proxy for "too much going on in one expression". |
-| `noStutteringName` | module | – | A qualified name repeating its qualifier: `Parser.ParserToken` rather than `Parser.Token`. |
-| `maxDeclarationLines` | declaration | `Int` | A top-level declaration whose own source span is too long. The one blind spot the nesting rules cannot catch: long, flat and shallow. |
-| `maxLambdaNestingDepth` | declaration | `Int` | A lambda nested anywhere inside too many enclosing lambdas - not only directly chained ones. |
-| `maxFunctionArity` | declaration | `Int` | A top-level function taking more arguments than allowed. |
+| | |
+|---|---|
+| `noStutteringName` | Flags a qualified name whose own name repeats its qualifier. |
+| `maxLambdaNestingDepth` | Flags a lambda nested anywhere inside more than the configured number of enclosing lambdas. |
+| `maxDelimiterRun` | Flags more than the configured number of brackets opening or closing in immediate succession. |
+| `maxDeclarationLines` | Flags a top-level declaration whose own source line span exceeds the configured maximum. |
+| `maxLineLength` | Flags a line over the configured width - a type signature gets its own, wider allowance than ordinary code. |
+| `maxFunctionArity` | Flags a top-level function definition with more than the configured number of arguments. |
 
-## Status
-
-Early. The engine's API has had one consumer so far and will move.
+Each lives in its own module, `Lint.Rules.<Group>.<Name>`.
 
 ## Licence
 
