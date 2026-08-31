@@ -32,7 +32,7 @@ type Described r =
 -- | One rule: its name, what it flags, and an example of each side.
 row :: forall r. Described r -> String
 row r = Str.joinWith "\n"
-  ( [ "#### `" <> r.name <> "`", "", r.description ] <> examples r )
+  ( [ "### `" <> r.name <> "`", "", r.description ] <> examples r )
 
 examples :: forall r. Described r -> Array String
 examples r =
@@ -78,7 +78,7 @@ groups =
   ]
 
 section :: forall r. { group :: String, rules :: Array String | r } -> String
-section { group, rules } = Str.joinWith "\n\n" ([ "### " <> group ] <> rules)
+section { group, rules } = Str.joinWith "\n\n" ([ "## " <> group ] <> rules)
 
 table :: String
 table = Str.joinWith "\n\n" (map section groups)
