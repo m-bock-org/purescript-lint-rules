@@ -9,12 +9,7 @@ import Data.Tuple.Nested ((/\))
 import PureScript.CST.Types (Declaration(..), Ident(..), Module(..), ModuleBody(..), Name(..))
 import PureScript.Lint.Graph (Graph, fromEdges, longestPath)
 import PureScript.Lint.Graph.Components (condense)
-import PureScript.Lint.Rule
-  ( LintResult
-  , ModuleLint
-  , violation
-  , violations
-  )
+import PureScript.Lint.Rule (ModuleLint, violations)
 import PureScript.Lint.Scope (BindingId(..), moduleReferences)
 
 maxCallStackDepth :: Int -> ModuleLint

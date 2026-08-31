@@ -2,28 +2,16 @@ module PureScript.Lint.Rules.Naming.NoStutteringName (noStutteringName) where
 
 import Prelude
 
-import Data.Array (nub, null) as Array
-import Data.Foldable (fold)
+import Data.Array (nub) as Array
 import Data.Maybe (Maybe(..))
 import Data.Maybe (isJust) as Maybe
 import Data.String (Pattern(..))
-import Data.String (joinWith, stripPrefix) as Str
+import Data.String (stripPrefix) as Str
 import PureScript.CST.Traversal (defaultMonoidalVisitor, foldMapModule)
-import PureScript.CST.Types
-  ( Binder(..)
-  , Expr(..)
-  , Ident(..)
-  , Module
-  , ModuleName(..)
-  , Operator(..)
-  , Proper(..)
-  , QualifiedName(..)
-  , Type(..)
-  )
+import PureScript.CST.Types as CST
 import PureScript.Lint.Rule
   ( LintResult
   , ModuleLint
-  , violation
   , violations
   , withHint
   )
@@ -38,46 +26,46 @@ noStutteringName =
   , rule: \_context cstModule -> report (Array.nub (stutters cstModule))
   }
 
-stutters :: Module Void -> Array String
+stutters :: CST.Module Void -> Array String
 stutters = foldMapModule
   ( defaultMonoidalVisitor
       { onExpr = fromExpr, onType = fromType, onBinder = fromBinder }
   )
 
 -- | `unOperator`.
-fromExpr :: Expr Void -> Array String
+fromExpr :: CST.Expr Void -> Array String
 fromExpr = case _ of
-  ExprIdent qn -> stuttering unIdent qn
-  ExprConstructor qn -> stuttering unProper qn
-  ExprOpName qn -> stuttering unOperator qn
+  CST.ExprIdent qn -> stuttering unIdent qn
+  CST.ExprConstructor qn -> stuttering unProper qn
+  CST.ExprOpName qn -> stuttering unOperator qn
   _ -> []
 
-fromType :: Type Void -> Array String
+fromType :: CST.Type Void -> Array String
 fromType = case _ of
-  TypeConstructor qn -> stuttering unProper qn
-  TypeOpName qn -> stuttering unOperator qn
+  CST.TypeConstructor qn -> stuttering unProper qn
+  CST.TypeOpName qn -> stuttering unOperator qn
   _ -> []
 
-fromBinder :: Binder Void -> Array String
+fromBinder :: CST.Binder Void -> Array String
 fromBinder = case _ of
-  BinderConstructor qn _ -> stuttering unProper qn
+  CST.BinderConstructor qn _ -> stuttering unProper qn
   _ -> []
 
-stuttering :: ∀ a. (a -> String) -> QualifiedName a -> Array String
-stuttering nameText (QualifiedName q) = case q.module of
-  Just (ModuleName alias)
+stuttering :: ∀ a. (a -> String) -> CST.QualifiedName a -> Array String
+stuttering nameText (CST.QualifiedName q) = case q.module of
+  Just (CST.ModuleName alias)
     | Maybe.isJust (Str.stripPrefix (Pattern alias) (nameText q.name)) ->
         [ alias <> "." <> nameText q.name ]
   _ -> []
 
-unIdent :: Ident -> String
-unIdent (Ident n) = n
+unIdent :: CST.Ident -> String
+unIdent (CST.Ident n) = n
 
-unProper :: Proper -> String
-unProper (Proper n) = n
+unProper :: CST.Proper -> String
+unProper (CST.Proper n) = n
 
-unOperator :: Operator -> String
-unOperator (Operator n) = n
+unOperator :: CST.Operator -> String
+unOperator (CST.Operator n) = n
 
 report :: ∀ a. Array String -> LintResult a
 report found = withHint hint

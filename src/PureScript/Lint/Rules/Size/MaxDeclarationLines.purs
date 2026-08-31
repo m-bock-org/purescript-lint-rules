@@ -4,12 +4,7 @@ import Prelude
 
 import Data.Maybe (Maybe(..))
 import PureScript.CST.Range (rangeOf)
-import PureScript.Lint.Rule
-  ( DeclarationLint
-  , LintResult
-  , violation
-  , violations
-  )
+import PureScript.Lint.Rule (DeclarationLint, violations)
 
 maxDeclarationLines :: Int -> DeclarationLint
 maxDeclarationLines maxLines =
@@ -24,8 +19,10 @@ maxDeclarationLines maxLines =
         lineSpan = range.end.line - range.start.line + 1
       in
         if lineSpan > maxLines then
-          violation
-            ("declaration spans " <> show lineSpan <> " lines, over the max of " <> show maxLines)
+          violations
+            [ "declaration spans " <> show lineSpan <> " lines, over the max of "
+                <> show maxLines
+            ]
         else
           violations []
   }

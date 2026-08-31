@@ -20,27 +20,7 @@ import Data.Tuple (Tuple(..))
 import Data.Tuple (snd) as Tuple
 import Data.Tuple.Nested (type (/\), (/\))
 import PureScript.CST.Traversal (defaultMonoidalVisitor, foldMapBinder, traverseExpr)
-import PureScript.CST.Types
-  ( Binder(..)
-  , Declaration(..)
-  , DoStatement(..)
-  , Expr(..)
-  , Guarded(..)
-  , GuardedExpr(..)
-  , Ident(..)
-  , Labeled(..)
-  , LetBinding(..)
-  , Module(..)
-  , ModuleBody(..)
-  , Name(..)
-  , PatternGuard(..)
-  , QualifiedName(..)
-  , Separated(..)
-  , Type(..)
-  , ValueBindingFields
-  , Where(..)
-  , Wrapped(..)
-  )
+import PureScript.CST.Types as CST
 
 data BindingId
   = TopLevelBinding String
@@ -58,8 +38,8 @@ bindingName = case _ of
   TopLevelBinding n -> n
   LocalBinding { name } -> name
 
-moduleReferences :: Module Void -> Array Reference
-moduleReferences (Module { body: ModuleBody { decls } }) =
+moduleReferences :: CST.Module Void -> Array Reference
+moduleReferences (CST.Module { body: CST.ModuleBody { decls } }) =
   let
     callables = Array.mapMaybe (callableDeclName decls) decls
 
@@ -68,20 +48,20 @@ moduleReferences (Module { body: ModuleBody { decls } }) =
   in
     Array.concatMap
       ( case _ of
-          DeclValue fields ->
+          CST.DeclValue fields ->
             valueBindingReferences topLevelScope (TopLevelBinding $ identName fields.name)
               fields
           _ -> []
       )
       decls
 
-callableDeclName :: Array (Declaration Void) -> Declaration Void -> Maybe String
+callableDeclName :: Array (CST.Declaration Void) -> CST.Declaration Void -> Maybe String
 callableDeclName decls = case _ of
-  DeclValue fields -> callableName decls fields
+  CST.DeclValue fields -> callableName decls fields
   _ -> Nothing
 
 -- | `isFunctionType`, `signatureOf`.
-callableName :: Array (Declaration Void) -> ValueBindingFields Void -> Maybe String
+callableName :: Array (CST.Declaration Void) -> CST.ValueBindingFields Void -> Maybe String
 callableName decls fields =
   let
     name = identName fields.name
@@ -89,58 +69,58 @@ callableName decls fields =
   in
     if callable then Just name else Nothing
 
-signatureOf :: Array (Declaration Void) -> String -> Maybe (Type Void)
+signatureOf :: Array (CST.Declaration Void) -> String -> Maybe (CST.Type Void)
 signatureOf decls name = Array.head $ Array.mapMaybe
   ( case _ of
-      DeclSignature (Labeled { label: Name { name: Ident n }, value }) ->
+      CST.DeclSignature (CST.Labeled { label: CST.Name { name: CST.Ident n }, value }) ->
         if n == name then Just value else Nothing
       _ -> Nothing
   )
   decls
 
-isFunctionType :: Type Void -> Boolean
+isFunctionType :: CST.Type Void -> Boolean
 isFunctionType = case _ of
-  TypeArrow _ _ _ -> true
-  TypeForall _ _ _ t -> isFunctionType t
-  TypeConstrained _ _ t -> isFunctionType t
-  TypeKinded t _ _ -> isFunctionType t
-  TypeParens (Wrapped { value }) -> isFunctionType value
+  CST.TypeArrow _ _ _ -> true
+  CST.TypeForall _ _ _ t -> isFunctionType t
+  CST.TypeConstrained _ _ t -> isFunctionType t
+  CST.TypeKinded t _ _ -> isFunctionType t
+  CST.TypeParens (CST.Wrapped { value }) -> isFunctionType value
   _ -> false
 
-identName :: Name Ident -> String
-identName (Name { name: Ident n }) = n
+identName :: CST.Name CST.Ident -> String
+identName (CST.Name { name: CST.Ident n }) = n
 
-localIdOf :: Name Ident -> BindingId
-localIdOf (Name { token, name: Ident n }) = LocalBinding
+localIdOf :: CST.Name CST.Ident -> BindingId
+localIdOf (CST.Name { token, name: CST.Ident n }) = LocalBinding
   { name: n, line: token.range.start.line, column: token.range.start.column }
 
-binderNames :: Binder Void -> Array String
+binderNames :: CST.Binder Void -> Array String
 binderNames = foldMapBinder
   ( defaultMonoidalVisitor
       { onBinder = case _ of
-          BinderVar (Name { name: Ident n }) -> [ n ]
-          BinderNamed (Name { name: Ident n }) _ _ -> [ n ]
+          CST.BinderVar (CST.Name { name: CST.Ident n }) -> [ n ]
+          CST.BinderNamed (CST.Name { name: CST.Ident n }) _ _ -> [ n ]
           _ -> []
       }
   )
 
-lambdaNames :: NonEmptyArray (Binder Void) -> Array String
+lambdaNames :: NonEmptyArray (CST.Binder Void) -> Array String
 lambdaNames binders = Array.concatMap binderNames (NEA.toArray binders)
 
 shadowAll :: Array String -> Scope -> Scope
 shadowAll names scope = Array.foldl (flip Map.delete) scope names
 
-valueBindingReferences :: Scope -> BindingId -> ValueBindingFields Void -> Array Reference
+valueBindingReferences :: Scope -> BindingId -> CST.ValueBindingFields Void -> Array Reference
 valueBindingReferences scope current fields =
   guardedReferences (shadowAll (Array.concatMap binderNames fields.binders) scope)
     current
     fields.guarded
 
 -- | `whereReferences`.
-guardedExprReferences :: Scope -> BindingId -> GuardedExpr Void -> Array Reference
-guardedExprReferences scope current (GuardedExpr g) =
+guardedExprReferences :: Scope -> BindingId -> CST.GuardedExpr Void -> Array Reference
+guardedExprReferences scope current (CST.GuardedExpr g) =
   let
-    Separated { head, tail } = g.patterns
+    CST.Separated { head, tail } = g.patterns
     step acc pg =
       { scope: patternGuardScope acc.scope pg
       , refs: acc.refs <> patternGuardRefs current acc.scope pg
@@ -149,21 +129,21 @@ guardedExprReferences scope current (GuardedExpr g) =
   in
     seeded.refs <> whereReferences seeded.scope current g.where
 
-patternGuardRefs :: BindingId -> Scope -> PatternGuard Void -> Array Reference
-patternGuardRefs current sc (PatternGuard { expr }) = exprReferences sc current expr
+patternGuardRefs :: BindingId -> Scope -> CST.PatternGuard Void -> Array Reference
+patternGuardRefs current sc (CST.PatternGuard { expr }) = exprReferences sc current expr
 
-patternGuardScope :: Scope -> PatternGuard Void -> Scope
-patternGuardScope sc (PatternGuard { binder }) =
+patternGuardScope :: Scope -> CST.PatternGuard Void -> Scope
+patternGuardScope sc (CST.PatternGuard { binder }) =
   Maybe.maybe sc (\(Tuple b _) -> shadowAll (binderNames b) sc) binder
 
-guardedReferences :: Scope -> BindingId -> Guarded Void -> Array Reference
+guardedReferences :: Scope -> BindingId -> CST.Guarded Void -> Array Reference
 guardedReferences scope current =
   case _ of
-    Unconditional _ w -> whereReferences scope current w
-    Guarded ges -> Array.concatMap (guardedExprReferences scope current) (NEA.toArray ges)
+    CST.Unconditional _ w -> whereReferences scope current w
+    CST.Guarded ges -> Array.concatMap (guardedExprReferences scope current) (NEA.toArray ges)
 
-whereReferences :: Scope -> BindingId -> Where Void -> Array Reference
-whereReferences scope current (Where { expr, bindings }) = Maybe.maybe
+whereReferences :: Scope -> BindingId -> CST.Where Void -> Array Reference
+whereReferences scope current (CST.Where { expr, bindings }) = Maybe.maybe
   (exprReferences scope current expr)
   ( \(_ /\ bs) ->
       let
@@ -173,61 +153,61 @@ whereReferences scope current (Where { expr, bindings }) = Maybe.maybe
   )
   bindings
 
-isCallable :: ValueBindingFields Void -> Boolean
+isCallable :: CST.ValueBindingFields Void -> Boolean
 isCallable fields = not (Array.null fields.binders)
 
-extendWithLetBindings :: Scope -> Array (LetBinding Void) -> Scope
+extendWithLetBindings :: Scope -> Array (CST.LetBinding Void) -> Scope
 extendWithLetBindings = Array.foldl
   ( \scope -> case _ of
-      LetBindingName fields
+      CST.LetBindingName fields
         | isCallable fields -> Map.insert (identName fields.name) (localIdOf fields.name) scope
         | otherwise -> Map.delete (identName fields.name) scope
-      LetBindingPattern binder _ _ -> shadowAll (binderNames binder) scope
+      CST.LetBindingPattern binder _ _ -> shadowAll (binderNames binder) scope
       _ -> scope
   )
 
-letBindingReferences :: Scope -> BindingId -> Array (LetBinding Void) -> Array Reference
+letBindingReferences :: Scope -> BindingId -> Array (CST.LetBinding Void) -> Array Reference
 letBindingReferences scope current = Array.concatMap case _ of
-  LetBindingName fields
+  CST.LetBindingName fields
     | isCallable fields -> valueBindingReferences scope (localIdOf fields.name) fields
     | otherwise -> valueBindingReferences scope current fields
-  LetBindingPattern _ _ w -> whereReferences scope current w
+  CST.LetBindingPattern _ _ w -> whereReferences scope current w
   _ -> []
 
-type CaseBranch = Separated (Binder Void) /\ Guarded Void
+type CaseBranch = CST.Separated (CST.Binder Void) /\ CST.Guarded Void
 
 branchReferences :: Scope -> BindingId -> CaseBranch -> Array Reference
-branchReferences scope current (Separated { head: b, tail: bt } /\ guarded) =
+branchReferences scope current (CST.Separated { head: b, tail: bt } /\ guarded) =
   let
     names = Array.concatMap binderNames (Array.cons b (map Tuple.snd bt))
   in
     guardedReferences (shadowAll names scope) current guarded
 
 -- | `branchReferences`, `doReferences`.
-exprReferences :: Scope -> BindingId -> Expr Void -> Array Reference
+exprReferences :: Scope -> BindingId -> CST.Expr Void -> Array Reference
 exprReferences scope current expr = case expr of
-  ExprIdent (QualifiedName { module: Nothing, name: Ident n }) ->
+  CST.ExprIdent (CST.QualifiedName { module: Nothing, name: CST.Ident n }) ->
     Maybe.maybe [] (\to -> [ { from: current, to } ]) (Map.lookup n scope)
 
-  ExprLet { bindings, body } ->
+  CST.ExprLet { bindings, body } ->
     let
       inner = extendWithLetBindings scope (NEA.toArray bindings)
     in
       letBindingReferences inner current (NEA.toArray bindings)
         <> exprReferences inner current body
 
-  ExprLambda { binders, body } ->
+  CST.ExprLambda { binders, body } ->
     exprReferences (shadowAll (lambdaNames binders) scope) current body
 
-  ExprCase { head, branches } ->
+  CST.ExprCase { head, branches } ->
     let
-      Separated { head: h, tail: t } = head
+      CST.Separated { head: h, tail: t } = head
       headRefs = Array.concatMap (exprReferences scope current)
         (Array.cons h (map Tuple.snd t))
     in
       headRefs <> Array.concatMap (branchReferences scope current) (NEA.toArray branches)
 
-  ExprDo { statements } -> doReferences scope current (NEA.toArray statements)
+  CST.ExprDo { statements } -> doReferences scope current (NEA.toArray statements)
 
   other -> un Const
     ( traverseExpr
@@ -238,25 +218,25 @@ exprReferences scope current expr = case expr of
         other
     )
 
-doReferences :: Scope -> BindingId -> Array (DoStatement Void) -> Array Reference
+doReferences :: Scope -> BindingId -> Array (CST.DoStatement Void) -> Array Reference
 doReferences scope current statements =
   (Array.foldl (doStatementStep current) { scope, refs: [] } statements).refs
 
 type ScopeAcc = { scope :: Scope, refs :: Array Reference }
 
 -- | `binderNames`, `letStatementStep`.
-doStatementStep :: BindingId -> ScopeAcc -> DoStatement Void -> ScopeAcc
+doStatementStep :: BindingId -> ScopeAcc -> CST.DoStatement Void -> ScopeAcc
 doStatementStep current acc = case _ of
-  DoDiscard e -> acc { refs = acc.refs <> exprReferences acc.scope current e }
-  DoBind binder _ e -> acc
+  CST.DoDiscard e -> acc { refs = acc.refs <> exprReferences acc.scope current e }
+  CST.DoBind binder _ e -> acc
     { scope = shadowAll (binderNames binder) acc.scope
     , refs = acc.refs <> exprReferences acc.scope current e
     }
-  DoLet _ bs -> letStatementStep current acc (NEA.toArray bs)
+  CST.DoLet _ bs -> letStatementStep current acc (NEA.toArray bs)
   _ -> acc
 
 -- | `letBindingReferences`.
-letStatementStep :: BindingId -> ScopeAcc -> Array (LetBinding Void) -> ScopeAcc
+letStatementStep :: BindingId -> ScopeAcc -> Array (CST.LetBinding Void) -> ScopeAcc
 letStatementStep current acc bs =
   let
     inner = extendWithLetBindings acc.scope bs

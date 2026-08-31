@@ -9,11 +9,7 @@ import Data.Maybe (maybe) as Maybe
 import PureScript.CST.Range (tokensOf)
 import PureScript.CST.Range.TokenList (toArray) as TokenList
 import PureScript.CST.Types (Module, Token(..))
-import PureScript.Lint.Rule
-  ( LintResult
-  , ModuleLint
-  , violations
-  )
+import PureScript.Lint.Rule (ModuleLint, violations)
 
 data Side = Opening | Closing
 

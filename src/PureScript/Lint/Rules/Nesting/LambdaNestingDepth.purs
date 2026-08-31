@@ -7,11 +7,7 @@ import Data.Maybe (Maybe(..))
 import Data.Tuple.Nested (type (/\), (/\))
 import PureScript.CST.Traversal (defaultVisitorWithContextM, rewriteDeclWithContextM)
 import PureScript.CST.Types (Declaration, Expr(..))
-import PureScript.Lint.Rule
-  ( DeclarationLint
-  , LintResult
-  , violations
-  )
+import PureScript.Lint.Rule (DeclarationLint, violations)
 
 maxLambdaNestingDepth :: Int -> DeclarationLint
 maxLambdaNestingDepth maxDepth =

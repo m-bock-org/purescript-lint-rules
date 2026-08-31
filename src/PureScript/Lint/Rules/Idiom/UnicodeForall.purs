@@ -11,12 +11,7 @@ import PureScript.CST.Traversal
   , rewriteDeclBottomUp
   )
 import PureScript.CST.Types (Declaration, SourceStyle(..), SourceToken, Token(..), Type(..))
-import PureScript.Lint.Rule
-  ( DeclarationLint
-  , fixed
-  , LintResult
-  , violations
-  )
+import PureScript.Lint.Rule (DeclarationLint, fixed, violations)
 
 unicodeForall :: DeclarationLint
 unicodeForall =
