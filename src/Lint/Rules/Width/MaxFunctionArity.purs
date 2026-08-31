@@ -4,7 +4,6 @@ import Prelude
 
 import Data.Array (length) as Array
 import Data.Foldable (fold)
-import Data.Maybe (Maybe(..))
 import PureScript.CST.Types (Declaration(..), Ident(..), Name(..))
 import Lint.Rule (DeclarationLint, violations, withHint)
 

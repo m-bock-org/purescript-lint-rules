@@ -3,7 +3,6 @@ module Lint.Rules.Nesting.LambdaNestingDepth (maxLambdaNestingDepth) where
 import Prelude
 
 import Control.Monad.State (State, execState, modify_)
-import Data.Maybe (Maybe(..))
 import Data.Tuple.Nested (type (/\), (/\))
 import PureScript.CST.Traversal (defaultVisitorWithContextM, rewriteDeclWithContextM)
 import PureScript.CST.Types (Declaration, Expr(..))

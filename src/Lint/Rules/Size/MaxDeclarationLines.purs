@@ -2,7 +2,6 @@ module Lint.Rules.Size.MaxDeclarationLines (maxDeclarationLines) where
 
 import Prelude
 
-import Data.Maybe (Maybe(..))
 import PureScript.CST.Range (rangeOf)
 import Lint.Rule (DeclarationLint, violations)
 
