@@ -20,6 +20,12 @@ package:
     - strings
     - transformers
     - tuples
+  test:
+    main: Test.Lint
+    dependencies:
+      - aff
+      - effect
+      - node-process
 workspace:
   packageSet:
     registry: 66.9.0

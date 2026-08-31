@@ -20,7 +20,11 @@
           ]
         },
         "test": {
-          "dependencies": []
+          "dependencies": [
+            "aff",
+            "effect",
+            "node-process"
+          ]
         }
       }
     },
