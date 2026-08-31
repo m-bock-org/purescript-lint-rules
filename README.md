@@ -21,7 +21,7 @@ import PureScript.Lint.Rules.Nesting.MaxCallStackDepth (maxCallStackDepth)
 | `maxCallStackDepth` | module | `Int` | A function whose longest chain of calls through your *own* functions exceeds the limit. |
 | `noStutteringName` | module | – | A qualified name repeating its qualifier: `Parser.ParserToken` rather than `Parser.Token`. |
 | `maxDeclarationLines` | declaration | `Int` | A top-level declaration whose own source span is too long. The one blind spot the nesting rules cannot catch: long, flat and shallow. |
-| `maxLambdaNestingDepth` | declaration | `Int` | A lambda nested inside too many other lambdas in one declaration. |
+| `maxLambdaNestingDepth` | declaration | `Int` | A lambda nested anywhere inside too many enclosing lambdas - not only directly chained ones. |
 | `maxFunctionArity` | declaration | `Int` | A top-level function taking more arguments than allowed. |
 | `unicodeForall` | declaration | – | `forall` where `∀` is wanted. **Auto-fixable.** |
 | `sameConstructorArm` | expression | config record | A case arm that matches a one-argument constructor and rebuilds the same constructor around the result - that is a `map`. |

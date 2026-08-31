@@ -13,9 +13,9 @@ maxLambdaNestingDepth :: Int -> DeclarationLint
 maxLambdaNestingDepth maxDepth =
   { name: "max-lambda-nesting-depth"
   , description:
-      "Flags a lambda nested more than the configured depth inside other lambdas in the same declaration."
-  , goodExample: Just "\\a b c -> f a b c"
-  , badExample: Just "\\a -> \\b -> \\c -> f a b c"
+      "Flags a lambda nested anywhere inside more than the configured number of enclosing lambdas."
+  , goodExample: Just "\\xs -> map f xs"
+  , badExample: Just "\\xs -> map (\\x -> f x) xs"
   , rule: \_context decl -> violations (findings maxDepth decl)
   }
 
