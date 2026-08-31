@@ -4,8 +4,10 @@ module Test.Docs (main) where
 
 import Prelude
 
-import Data.Array (fold) as Array
-import Data.String (Pattern(..), split) as Str
+import Data.Array (concat, concatMap, difference, fold, null) as Array
+import Data.Foldable (for_)
+import Data.String (Pattern(..), Replacement(..), replace, split) as Str
+import Data.Traversable (for)
 import Data.String.Common (joinWith) as Str
 import Effect (Effect)
 import Lint.Rules.Naming.NoStutteringName (noStutteringName)
@@ -14,8 +16,10 @@ import Lint.Rules.Nesting.MaxDelimiterRun (maxDelimiterRun)
 import Lint.Rules.Size.MaxDeclarationLines (maxDeclarationLines)
 import Lint.Rules.Size.MaxLineLength (maxLineLength)
 import Lint.Rules.Width.MaxFunctionArity (maxFunctionArity)
+import Effect.Class.Console (log)
 import Node.Encoding (Encoding(..))
-import Node.FS.Sync (readTextFile, writeTextFile)
+import Node.FS.Sync (readTextFile, readdir, writeTextFile)
+import Node.Process (exit')
 
 type Described r = { name :: String, description :: String | r }
 
@@ -23,22 +27,32 @@ row :: forall r. Described r -> String
 row r = Array.fold [ "| `", r.name, "` | ", r.description, " |" ]
 
 -- | Mirrors the module layout: one section per `Lint.Rules.<Group>`.
-groups :: Array { group :: String, rules :: Array String }
+-- | `modules` is what each entry claims to document, checked against
+-- | what is actually on disk before anything is written.
+groups :: Array { group :: String, modules :: Array String, rules :: Array String }
 groups =
-  [ { group: "Naming", rules: [ row noStutteringName ] }
+  [ { group: "Naming"
+    , modules: [ "NoStutteringName" ]
+    , rules: [ row noStutteringName ]
+    }
   , { group: "Nesting"
+    , modules: [ "MaxDelimiterRun", "LambdaNestingDepth" ]
     , rules: [ row (maxDelimiterRun 2), row (maxLambdaNestingDepth 1) ]
     }
   , { group: "Size"
+    , modules: [ "MaxDeclarationLines", "MaxLineLength" ]
     , rules:
         [ row (maxDeclarationLines 40)
         , row (maxLineLength { code: 100, signature: 150 })
         ]
     }
-  , { group: "Width", rules: [ row (maxFunctionArity 4) ] }
+  , { group: "Width"
+    , modules: [ "MaxFunctionArity" ]
+    , rules: [ row (maxFunctionArity 4) ]
+    }
   ]
 
-section :: { group :: String, rules :: Array String } -> String
+section :: forall r. { group :: String, rules :: Array String | r } -> String
 section { group, rules } = Str.joinWith "\n"
   ([ "### " <> group, "", "| | |", "|---|---|" ] <> rules)
 
@@ -59,7 +73,34 @@ splice readme = case Str.split (Str.Pattern startMark) readme of
     _ -> readme
   _ -> readme
 
+-- | Every rule module on disk, as "Group/Name".
+onDisk :: Effect (Array String)
+onDisk = do
+  dirs <- readdir "src/Lint/Rules"
+  map Array.concat $ for dirs \dir -> do
+    files <- readdir ("src/Lint/Rules/" <> dir)
+    pure (map (\f -> dir <> "/" <> dropPurs f) files)
+
+dropPurs :: String -> String
+dropPurs f = Str.replace (Str.Pattern ".purs") (Str.Replacement "") f
+
+-- | What this file claims to document.
+claimed :: Array String
+claimed = Array.concatMap
+  (\g -> map (\m -> g.group <> "/" <> m) g.modules)
+  groups
+
 main :: Effect Unit
 main = do
-  readme <- readTextFile UTF8 "README.md"
-  writeTextFile UTF8 "README.md" (splice readme)
+  actual <- onDisk
+  let
+    missing = Array.difference actual claimed
+    stale = Array.difference claimed actual
+  if Array.null missing && Array.null stale then do
+    readme <- readTextFile UTF8 "README.md"
+    writeTextFile UTF8 "README.md" (splice readme)
+  else do
+    log "Test.Docs is out of step with the rule modules on disk."
+    for_ missing \m -> log ("  on disk but not documented: " <> m)
+    for_ stale \m -> log ("  documented but not on disk: " <> m)
+    exit' 1
