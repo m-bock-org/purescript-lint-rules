@@ -51,8 +51,7 @@ it does not analyse.
 
 ## Status
 
-Early. Extracted from a private codebase where these have been in daily
-use, but the engine's API has had one consumer so far and will move.
+Early. The engine's API has had one consumer so far and will move.
 
 ## Licence
 
