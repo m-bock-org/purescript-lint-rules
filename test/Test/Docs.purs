@@ -58,7 +58,7 @@ fenced lines
 labelled :: String -> Array String -> Array String
 labelled label xs
   | Array.null xs = []
-  | otherwise = [ "", "**" <> label <> "**" ] <> fenced xs
+  | otherwise = [ "", "#### " <> label ] <> fenced xs
 
 -- | Mirrors the module layout: one section per `Lint.Rules.<Group>`.
 -- | `modules` is what each entry claims to document, checked against

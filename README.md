@@ -32,13 +32,13 @@ rules = Rules.do
 
 Flags a qualified name whose own name repeats its qualifier.
 
-**Good**
+#### Good
 
 ```purescript
 Parser.Token
 ```
 
-**Bad**
+#### Bad
 
 ```purescript
 Parser.ParserToken
@@ -52,13 +52,13 @@ Flags more than the configured number of brackets opening or closing in immediat
 
 Read against `a run of 2`.
 
-**Good**
+#### Good
 
 ```purescript
 f $ g (h (i x))
 ```
 
-**Bad**
+#### Bad
 
 ```purescript
 f (g (h (i x)))
@@ -70,13 +70,13 @@ Flags a lambda nested anywhere inside more than the configured number of enclosi
 
 Read against `a depth of 2`.
 
-**Good**
+#### Good
 
 ```purescript
 \xs -> map (\x -> f x) xs
 ```
 
-**Bad**
+#### Bad
 
 ```purescript
 \xs -> map (\x -> filter (\y -> p y) x) xs
@@ -90,13 +90,13 @@ Flags a top-level declaration whose own source line span exceeds the configured 
 
 Read against `5 lines`.
 
-**Good**
+#### Good
 
 ```purescript
 report r = header r <> body r
 ```
 
-**Bad**
+#### Bad
 
 ```purescript
 report r =
@@ -115,7 +115,7 @@ Flags a line over the configured width - a type signature gets its own, wider al
 
 Read against `{ code: 100, signature: 150 }`.
 
-**Good**
+#### Good
 
 ```purescript
 describe x =
@@ -124,7 +124,7 @@ describe x =
     <> show (total x) <> " in all)"
 ```
 
-**Bad**
+#### Bad
 
 ```purescript
 describe x = "value: " <> show x <> " (" <> show (length x) <> " items, " <> show (total x) <> " in all)"
@@ -138,13 +138,13 @@ Flags a top-level definition binding more parameters than the configured maximum
 
 Read against `max arity 3`.
 
-**Good**
+#### Good
 
 ```purescript
 resize { width, height, quality } img = img
 ```
 
-**Bad**
+#### Bad
 
 ```purescript
 resize width height quality img = img
