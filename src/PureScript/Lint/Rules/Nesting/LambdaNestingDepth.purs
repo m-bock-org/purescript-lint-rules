@@ -16,8 +16,8 @@ maxLambdaNestingDepth maxDepth =
   { name: RuleName "max-lambda-nesting-depth"
   , description:
       "Flags a lambda nested more than the configured depth inside other lambdas in the same declaration."
-  , goodExample: Nothing
-  , badExample: Nothing
+  , goodExample: Just "\\a b c -> f a b c"
+  , badExample: Just "\\a -> \\b -> \\c -> f a b c"
   , rule: \_context decl -> case violations maxDepth decl of
       [] -> Passed
       vs -> Violation (Str.joinWith "; " vs)

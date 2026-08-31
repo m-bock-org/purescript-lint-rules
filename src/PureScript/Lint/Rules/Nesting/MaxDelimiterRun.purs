@@ -26,8 +26,8 @@ maxDelimiterRun maxRun =
   { name: RuleName "max-delimiter-run"
   , description:
       "Flags more than the configured number of brackets opening or closing in immediate succession."
-  , goodExample: Nothing
-  , badExample: Nothing
+  , goodExample: Just "f $ g $ h $ i x"
+  , badExample: Just "f (g (h (i x)))"
   , rule: \_context cstModule -> case violations maxRun cstModule of
       [] -> Passed
       found -> Violation (Str.joinWith "; " found)

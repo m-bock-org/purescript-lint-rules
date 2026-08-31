@@ -13,8 +13,8 @@ maxFunctionArity maxArity =
   { name: RuleName "max-function-arity"
   , description:
       "Flags a top-level function definition with more than the configured number of arguments."
-  , goodExample: Nothing
-  , badExample: Nothing
+  , goodExample: Just "resize { width, height, quality } img = ..."
+  , badExample: Just "resize width height quality img = ..."
   , rule: \_context decl -> case decl of
       DeclValue { name: Name { name: Ident n }, binders }
         | Array.length binders > maxArity -> Violation $ fold
