@@ -19,14 +19,18 @@ type Delimiter = { side :: Side, line :: Int }
 
 type Run = { side :: Side, line :: Int, count :: Int }
 
-maxDelimiterRun :: Int -> ModuleLint
-maxDelimiterRun maxRun =
+maxDelimiterRun :: ModuleLint Int
+maxDelimiterRun =
   { name: "max-delimiter-run"
   , description:
       "Flags more than the configured number of brackets opening or closing in immediate succession."
-  , goodExamples: [ "f $ g (h (i x))" ]
-  , badExamples: [ "f (g (h (i x)))" ]
-  , rule: \_context cstModule -> violations (findings maxRun cstModule)
+  , examples: Just
+      { config: 2
+      , printConfig: \n -> Just ("a run of " <> show n)
+      , good: [ "f $ g (h (i x))" ]
+      , bad: [ "f (g (h (i x)))" ]
+      }
+  , rule: \maxRun _context cstModule -> violations (findings maxRun cstModule)
   }
 
 findings :: Int -> Module Void -> Array String

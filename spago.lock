@@ -605,7 +605,7 @@
       },
       "lint-purs": {
         "git": "https://github.com/m-bock/purescript-lint.git",
-        "ref": "b10fa1b3abffe4255771f7c44310c9bf105eb12a",
+        "ref": "8a66e34f5bb28954f0f3f657012a243e3e4258b1",
         "dependencies": [
           "aff",
           "arrays",
@@ -1125,7 +1125,7 @@
     "lint-purs": {
       "type": "git",
       "url": "https://github.com/m-bock/purescript-lint.git",
-      "rev": "b10fa1b3abffe4255771f7c44310c9bf105eb12a",
+      "rev": "8a66e34f5bb28954f0f3f657012a243e3e4258b1",
       "dependencies": [
         "aff",
         "arrays",

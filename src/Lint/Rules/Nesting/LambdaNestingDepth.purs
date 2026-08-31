@@ -2,20 +2,25 @@ module Lint.Rules.Nesting.LambdaNestingDepth (maxLambdaNestingDepth) where
 
 import Prelude
 
+import Data.Maybe (Maybe(..))
 import Control.Monad.State (State, execState, modify_)
 import Data.Tuple.Nested (type (/\), (/\))
 import PureScript.CST.Traversal (defaultVisitorWithContextM, rewriteDeclWithContextM)
 import PureScript.CST.Types (Declaration, Expr(..))
 import Lint.Rule (DeclarationLint, violations)
 
-maxLambdaNestingDepth :: Int -> DeclarationLint
-maxLambdaNestingDepth maxDepth =
+maxLambdaNestingDepth :: DeclarationLint Int
+maxLambdaNestingDepth =
   { name: "max-lambda-nesting-depth"
   , description:
       "Flags a lambda nested anywhere inside more than the configured number of enclosing lambdas."
-  , goodExamples: [ "\\xs -> map f xs" ]
-  , badExamples: [ "\\xs -> map (\\x -> f x) xs" ]
-  , rule: \_context decl -> violations (findings maxDepth decl)
+  , examples: Just
+      { config: 2
+      , printConfig: \n -> Just ("a depth of " <> show n)
+      , good: [ "\\xs -> map (\\x -> f x) xs" ]
+      , bad: [ "\\xs -> map (\\x -> filter (\\y -> p y) x) xs" ]
+      }
+  , rule: \maxDepth _context decl -> violations (findings maxDepth decl)
   }
 
 findings :: Int -> Declaration Void -> Array String

@@ -6,6 +6,9 @@ import Prelude
 
 import Data.Array (concat, concatMap, difference, filter, fold, intercalate, null) as Array
 import Data.Foldable (for_)
+import Data.Maybe (Maybe(..))
+import Data.Maybe (maybe) as Maybe
+import Lint.Rule (Examples)
 import Data.String (Pattern(..), Replacement(..), replace, split) as Str
 import Data.Traversable (for)
 import Data.String.Common (joinWith) as Str
@@ -21,29 +24,33 @@ import Node.Encoding (Encoding(..))
 import Node.FS.Sync (readTextFile, readdir, writeTextFile)
 import Node.Process (exit')
 
-type Described r =
+type Described cfg r =
   { name :: String
   , description :: String
-  , goodExamples :: Array String
-  , badExamples :: Array String
+  , examples :: Maybe (Examples cfg)
   | r
   }
 
 -- | One rule: its name, what it flags, and an example of each side.
-row :: forall r. Described r -> String
+row :: forall cfg r. Described cfg r -> String
 row r = Str.joinWith "\n"
   ( [ "### ● `" <> r.name <> "`", "", r.description ] <> examples r )
 
-examples :: forall r. Described r -> Array String
-examples r =
-  let
-    blocks = Array.filter (not <<< Array.null)
-      [ labelled "-- good" r.goodExamples, labelled "-- bad" r.badExamples ]
-  in
-    if Array.null blocks then []
-    else [ "", "```purescript" ]
-      <> Array.intercalate [ "" ] blocks
-      <> [ "```" ]
+examples :: forall cfg r. Described cfg r -> Array String
+examples r = case r.examples of
+  Nothing -> []
+  Just shown ->
+    let
+      blocks = Array.filter (not <<< Array.null)
+        [ Maybe.maybe [] (\c -> [ "-- with " <> c ]) (shown.printConfig shown.config)
+        , labelled "-- good" shown.good
+        , labelled "-- bad" shown.bad
+        ]
+    in
+      if Array.null blocks then []
+      else [ "", "```purescript" ]
+        <> Array.intercalate [ "" ] blocks
+        <> [ "```" ]
 
 labelled :: String -> Array String -> Array String
 labelled label xs
@@ -61,19 +68,19 @@ groups =
     }
   , { group: "Nesting"
     , modules: [ "MaxDelimiterRun", "LambdaNestingDepth" ]
-    , rules: [ row (maxDelimiterRun 2), row (maxLambdaNestingDepth 1) ]
+    , rules: [ row maxDelimiterRun, row maxLambdaNestingDepth ]
     }
   , { group: "Height"
     , modules: [ "MaxDeclarationLines" ]
-    , rules: [ row (maxDeclarationLines 40) ]
+    , rules: [ row maxDeclarationLines ]
     }
   , { group: "Width"
     , modules: [ "MaxLineLength" ]
-    , rules: [ row (maxLineLength { code: 100, signature: 150 }) ]
+    , rules: [ row maxLineLength ]
     }
   , { group: "Size"
     , modules: [ "MaxFunctionArity" ]
-    , rules: [ row (maxFunctionArity 4) ]
+    , rules: [ row maxFunctionArity ]
     }
   ]
 

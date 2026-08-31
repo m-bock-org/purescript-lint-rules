@@ -17,14 +17,20 @@ import Lint.Rule (ModuleLint, violations)
 
 type LineWidths = { code :: Int, signature :: Int }
 
-maxLineLength :: LineWidths -> ModuleLint
-maxLineLength widths =
+maxLineLength :: ModuleLint LineWidths
+maxLineLength =
   { name: "max-line-length"
   , description:
       "Flags a line over the configured width - a type signature gets its own, wider allowance than ordinary code."
-  , goodExamples: [ "describe x =\n  \"value: \"\n    <> show x" ]
-  , badExamples: [ "describe x = \"value: \" <> show x <> \" and a good deal more\"" ]
-  , rule: \_context cstModule -> violations (overLongLines widths cstModule)
+  , examples: Just
+      { config: { code: 100, signature: 150 }
+      , printConfig: Just <<< show
+      , good:
+          [ "describe x =\n  \"value: \" <> show x\n    <> \" (\" <> show (length x) <> \" items, \"\n    <> show (total x) <> \" in all)\"" ]
+      , bad:
+          [ "describe x = \"value: \" <> show x <> \" (\" <> show (length x) <> \" items, \" <> show (total x) <> \" in all)\"" ]
+      }
+  , rule: \widths _context cstModule -> violations (overLongLines widths cstModule)
   }
 
 overLongLines :: LineWidths -> Module Void -> Array String

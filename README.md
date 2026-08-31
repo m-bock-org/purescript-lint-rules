@@ -1,7 +1,28 @@
-# purescript-lint-rules
+<p>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.png">
+    <img alt="purescript-lint-rules" src="assets/logo-light.png" width="480">
+  </picture>
+</p>
+
+[![CI](https://github.com/m-bock/purescript-lint-rules/actions/workflows/ci.yml/badge.svg)](https://github.com/m-bock/purescript-lint-rules/actions/workflows/ci.yml)
 
 A set of general-purpose lint rules for the
 [`purescript-lint`](https://github.com/m-bock/purescript-lint) engine.
+
+Each rule is a value; its setting arrives where it joins a rule set.
+
+```purescript
+import Lint.Rules.Naming.NoStutteringName (noStutteringName)
+import Lint.Rules.Size.MaxFunctionArity (maxFunctionArity)
+import Lint.RuleSet.Do (rule)
+import Lint.RuleSet.Do as Rules
+
+rules :: Array Rule
+rules = Rules.do
+  rule $ perDecl maxFunctionArity 4
+  rule $ perModule_ noStutteringName
+```
 
 <!-- RULES -->
 
@@ -13,10 +34,10 @@ Flags a qualified name whose own name repeats its qualifier.
 
 ```purescript
 -- good
-parse :: Parser.Token -> Int
+Parser.Token
 
 -- bad
-parse :: Parser.ParserToken -> Int
+Parser.ParserToken
 ```
 
 ## Nesting
@@ -26,6 +47,8 @@ parse :: Parser.ParserToken -> Int
 Flags more than the configured number of brackets opening or closing in immediate succession.
 
 ```purescript
+-- with a run of 2
+
 -- good
 f $ g (h (i x))
 
@@ -38,11 +61,13 @@ f (g (h (i x)))
 Flags a lambda nested anywhere inside more than the configured number of enclosing lambdas.
 
 ```purescript
+-- with a depth of 2
+
 -- good
-\xs -> map f xs
+\xs -> map (\x -> f x) xs
 
 -- bad
-\xs -> map (\x -> f x) xs
+\xs -> map (\x -> filter (\y -> p y) x) xs
 ```
 
 ## Height
@@ -52,6 +77,8 @@ Flags a lambda nested anywhere inside more than the configured number of enclosi
 Flags a top-level declaration whose own source line span exceeds the configured maximum.
 
 ```purescript
+-- with 5 lines
+
 -- good
 report r = header r <> body r
 
@@ -71,13 +98,16 @@ report r =
 Flags a line over the configured width - a type signature gets its own, wider allowance than ordinary code.
 
 ```purescript
+-- with { code: 100, signature: 150 }
+
 -- good
 describe x =
-  "value: "
-    <> show x
+  "value: " <> show x
+    <> " (" <> show (length x) <> " items, "
+    <> show (total x) <> " in all)"
 
 -- bad
-describe x = "value: " <> show x <> " and a good deal more"
+describe x = "value: " <> show x <> " (" <> show (length x) <> " items, " <> show (total x) <> " in all)"
 ```
 
 ## Size
@@ -87,6 +117,8 @@ describe x = "value: " <> show x <> " and a good deal more"
 Flags a top-level definition binding more parameters than the configured maximum. Counts the binders written in the equation, which need not match the arrows in its type.
 
 ```purescript
+-- with max arity 3
+
 -- good
 resize { width, height, quality } img = img
 
@@ -95,8 +127,6 @@ resize width height quality img = img
 ```
 
 <!-- /RULES -->
-
-Each lives in its own module, `Lint.Rules.<Group>.<Name>`.
 
 ## Licence
 
