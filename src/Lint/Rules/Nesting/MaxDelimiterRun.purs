@@ -24,7 +24,7 @@ maxDelimiterRun maxRun =
   { name: "max-delimiter-run"
   , description:
       "Flags more than the configured number of brackets opening or closing in immediate succession."
-  , goodExamples: [ "f $ g $ h $ i x" ]
+  , goodExamples: [ "f $ g (h (i x))" ]
   , badExamples: [ "f (g (h (i x)))" ]
   , rule: \_context cstModule -> violations (findings maxRun cstModule)
   }

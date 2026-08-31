@@ -29,7 +29,7 @@ Flags more than the configured number of brackets opening or closing in immediat
 
 ```purescript
 -- good
-f $ g $ h $ i x
+f $ g (h (i x))
 
 -- bad
 f (g (h (i x)))
