@@ -32,17 +32,15 @@ rules = Rules.do
 
 Flags a qualified name whose own name repeats its qualifier.
 
-#### Good
-
-```purescript
-Parser.Token
-```
-
-#### Bad
-
-```purescript
-Parser.ParserToken
-```
+> **Good**
+> ```purescript
+> Parser.Token
+> ```
+>
+> **Bad**
+> ```purescript
+> Parser.ParserToken
+> ```
 
 ## Nesting
 
@@ -50,37 +48,33 @@ Parser.ParserToken
 
 Flags more than the configured number of brackets opening or closing in immediate succession.
 
-Read against `a run of 2`.
-
-#### Good
-
-```purescript
-f $ g (h (i x))
-```
-
-#### Bad
-
-```purescript
-f (g (h (i x)))
-```
+> **Config** `a run of 2`
+>
+> **Good**
+> ```purescript
+> f $ g (h (i x))
+> ```
+>
+> **Bad**
+> ```purescript
+> f (g (h (i x)))
+> ```
 
 ### ● `max-lambda-nesting-depth`
 
 Flags a lambda nested anywhere inside more than the configured number of enclosing lambdas.
 
-Read against `a depth of 2`.
-
-#### Good
-
-```purescript
-\xs -> map (\x -> f x) xs
-```
-
-#### Bad
-
-```purescript
-\xs -> map (\x -> filter (\y -> p y) x) xs
-```
+> **Config** `a depth of 2`
+>
+> **Good**
+> ```purescript
+> \xs -> map (\x -> f x) xs
+> ```
+>
+> **Bad**
+> ```purescript
+> \xs -> map (\x -> filter (\y -> p y) x) xs
+> ```
 
 ## Height
 
@@ -88,24 +82,22 @@ Read against `a depth of 2`.
 
 Flags a top-level declaration whose own source line span exceeds the configured maximum.
 
-Read against `5 lines`.
-
-#### Good
-
-```purescript
-report r = header r <> body r
-```
-
-#### Bad
-
-```purescript
-report r =
+> **Config** `5 lines`
+>
+> **Good**
+> ```purescript
+> report r = header r <> body r
+> ```
+>
+> **Bad**
+> ```purescript
+> report r =
   let
     h = header r
     b = body r
   in
     h <> b
-```
+> ```
 
 ## Width
 
@@ -113,22 +105,20 @@ report r =
 
 Flags a line over the configured width - a type signature gets its own, wider allowance than ordinary code.
 
-Read against `{ code: 100, signature: 150 }`.
-
-#### Good
-
-```purescript
-describe x =
+> **Config** `{ code: 100, signature: 150 }`
+>
+> **Good**
+> ```purescript
+> describe x =
   "value: " <> show x
     <> " (" <> show (length x) <> " items, "
     <> show (total x) <> " in all)"
-```
-
-#### Bad
-
-```purescript
-describe x = "value: " <> show x <> " (" <> show (length x) <> " items, " <> show (total x) <> " in all)"
-```
+> ```
+>
+> **Bad**
+> ```purescript
+> describe x = "value: " <> show x <> " (" <> show (length x) <> " items, " <> show (total x) <> " in all)"
+> ```
 
 ## Size
 
@@ -136,19 +126,17 @@ describe x = "value: " <> show x <> " (" <> show (length x) <> " items, " <> sho
 
 Flags a top-level definition binding more parameters than the configured maximum. Counts the binders written in the equation, which need not match the arrows in its type.
 
-Read against `max arity 3`.
-
-#### Good
-
-```purescript
-resize { width, height, quality } img = img
-```
-
-#### Bad
-
-```purescript
-resize width height quality img = img
-```
+> **Config** `max arity 3`
+>
+> **Good**
+> ```purescript
+> resize { width, height, quality } img = img
+> ```
+>
+> **Bad**
+> ```purescript
+> resize width height quality img = img
+> ```
 
 <!-- /RULES -->
 

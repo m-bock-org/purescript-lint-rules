@@ -4,7 +4,7 @@ module Test.Docs (main) where
 
 import Prelude
 
-import Data.Array (concat, concatMap, difference, fold, null) as Array
+import Data.Array (concat, concatMap, difference, filter, fold, intercalate, null) as Array
 import Data.Foldable (for_)
 import Data.Maybe (Maybe(..))
 import Data.Maybe (maybe) as Maybe
@@ -39,26 +39,41 @@ row r = Str.joinWith "\n"
 examples :: forall cfg r. Described cfg r -> Array String
 examples r = case r.examples of
   Nothing -> []
-  Just shown -> Array.concat
-    [ Maybe.maybe []
-        (\c -> [ "", "Read against `" <> c <> "`." ])
-        (shown.printConfig shown.config)
-    , labelled "Good" shown.good
-    , labelled "Bad" shown.bad
-    ]
+  Just shown -> quoted
+    ( Array.filter (not <<< Array.null)
+        [ Maybe.maybe [] (\c -> [ "**Config** `" <> c <> "`" ])
+            (shown.printConfig shown.config)
+        , labelled "Good" shown.good
+        , labelled "Bad" shown.bad
+        ]
+    )
+
+-- | Everything about one rule's examples in a single blockquote, so a
+-- | reader sees one grouped block with a rule down its left edge rather
+-- | than three loose sections.
+quoted :: Array (Array String) -> Array String
+quoted parts
+  | Array.null parts = []
+  | otherwise = [ "" ] <> map indent (Array.intercalate [ "" ] parts)
+
+-- | Private. Used only by `quoted`.
+indent :: String -> String
+indent line = if line == "" then ">" else "> " <> line
 
 -- | One block, or nothing where there is nothing to show.
 fenced :: Array String -> Array String
 fenced lines
   | Array.null lines = []
-  | otherwise = [ "", "```purescript" ] <> lines <> [ "```" ]
+  | otherwise = [ "```purescript" ] <> lines <> [ "```" ]
 
--- | A side of the rule, under its own heading, or nothing where there
--- | is nothing to show.
+-- | A side of the rule, under its own label, or nothing where there is
+-- | nothing to show. A bold label rather than a heading: these sit
+-- | inside a blockquote, and a heading there would add an anchor per
+-- | rule per side for no one to link to.
 labelled :: String -> Array String -> Array String
 labelled label xs
   | Array.null xs = []
-  | otherwise = [ "", "#### " <> label ] <> fenced xs
+  | otherwise = [ "**" <> label <> "**" ] <> fenced xs
 
 -- | Mirrors the module layout: one section per `Lint.Rules.<Group>`.
 -- | `modules` is what each entry claims to document, checked against
