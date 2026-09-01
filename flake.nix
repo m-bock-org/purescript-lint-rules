@@ -24,10 +24,6 @@
         workspace = lib.mkWorkspace {
           src = ./.;
           name = "lint-purs-rules";
-          gitHashes = {
-            encode-decode = "sha256-urIWpgaeo0pimisUTzFzwNAIibAV31zGaHWbu2hEFuw=";
-            lint-purs = "sha256-Nzo0C0vZG4ta3OZLUwNleCLATDA01F+aWj/kt89DJoc=";
-          };
         };
       in
       {
@@ -36,6 +32,11 @@
         # What the editor runs, so it never reaches for a globally
         # installed compiler or the one under node_modules.
         packages.toolchain = toolchain;
+        # The compiled test closure - every dependency plus the local
+        # packages built with their tests. `just output` copies this so a
+        # dev shell never recompiles what al-dente already built once per
+        # machine, which is the whole point of building with al-dente.
+        packages.testOutput = workspace.testOutput;
 
         devShells.default = pkgs.mkShell {
           name = "lint-purs-rules";
