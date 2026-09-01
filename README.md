@@ -92,11 +92,11 @@ Flags a top-level declaration whose own source line span exceeds the configured 
 > **Bad**
 > ```purescript
 > report r =
-  let
-    h = header r
-    b = body r
-  in
-    h <> b
+>   let
+>     h = header r
+>     b = body r
+>   in
+>     h <> b
 > ```
 
 ## Width
@@ -110,9 +110,9 @@ Flags a line over the configured width - a type signature gets its own, wider al
 > **Good**
 > ```purescript
 > describe x =
-  "value: " <> show x
-    <> " (" <> show (length x) <> " items, "
-    <> show (total x) <> " in all)"
+>   "value: " <> show x
+>     <> " (" <> show (length x) <> " items, "
+>     <> show (total x) <> " in all)"
 > ```
 >
 > **Bad**

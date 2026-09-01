@@ -54,11 +54,20 @@ examples r = case r.examples of
 quoted :: Array (Array String) -> Array String
 quoted parts
   | Array.null parts = []
-  | otherwise = [ "" ] <> map indent (Array.intercalate [ "" ] parts)
+  | otherwise = [ "" ] <> Array.concatMap indent (Array.intercalate [ "" ] parts)
 
 -- | Private. Used only by `quoted`.
-indent :: String -> String
-indent line = if line == "" then ">" else "> " <> line
+-- |
+-- | An example is one array element that may itself span several lines,
+-- | so it has to be split before prefixing: a continuation line without
+-- | its own `>` leaves the blockquote, and takes the closing fence with
+-- | it.
+indent :: String -> Array String
+indent block = map prefix (Str.split (Str.Pattern "\n") block)
+
+-- | Private. Used only by `indent`.
+prefix :: String -> String
+prefix line = if line == "" then ">" else "> " <> line
 
 -- | One block, or nothing where there is nothing to show.
 fenced :: Array String -> Array String
