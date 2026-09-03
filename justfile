@@ -43,8 +43,17 @@ docs-check:
     spago test -m Test.Docs >/dev/null
     diff -u "$before" README.md
 
-lint:
-    spago test -m Test.Lint
+# The style, run as a binary rather than as a dependency.
+#
+# A dependency is not available to every repository - the regulator
+# depends on several of them, so the arrow only goes one way - and the
+# binary needs none: it reads the workspace it is run in, and
+# `lint-exemptions.json` beside this file is where a departure goes.
+#
+# `--fix <command>` names a program that proposes fixes for findings the
+# style has guidance for. The linter judges what comes back.
+lint *ARGS:
+    nix run git+ssh://git@github.com/m-bock-org/purescript-lint-regulator#lint-public -- {{ARGS}}
 
 check: strict lint docs-check
 
