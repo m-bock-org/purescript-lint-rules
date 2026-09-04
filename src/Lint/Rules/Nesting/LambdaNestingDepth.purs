@@ -9,6 +9,7 @@ import PureScript.CST.Traversal (defaultVisitorWithContextM, rewriteDeclWithCont
 import PureScript.CST.Types (Declaration, Expr(..))
 import Lint.Rule (DeclarationLint, violations)
 
+-- | Uses `findings`.
 maxLambdaNestingDepth :: DeclarationLint Int
 maxLambdaNestingDepth =
   { name: "max-lambda-nesting-depth"
@@ -23,11 +24,13 @@ maxLambdaNestingDepth =
   , rule: \maxDepth _context decl -> violations (findings maxDepth decl)
   }
 
+-- | Private. Used only by `maxLambdaNestingDepth`. Uses `onExpr`.
 findings :: Int -> Declaration Void -> Array String
 findings maxDepth decl = execState
   (rewriteDeclWithContextM (defaultVisitorWithContextM { onExpr = onExpr maxDepth }) 0 decl)
   []
 
+-- | Private, depth 2. Used only by `findings`.
 onExpr :: Int -> Int -> Expr Void -> State (Array String) (Int /\ Expr Void)
 onExpr maxDepth depth expr = case expr of
   ExprLambda _ -> do
