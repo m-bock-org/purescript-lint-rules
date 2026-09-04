@@ -6,16 +6,17 @@ module Test.Lint (main) where
 import Prelude
 
 import Effect (Effect)
-import Effect.Aff (launchAff_)
+import Effect.Aff (launchAff_) as Aff
 import Effect.Class (liftEffect)
-import Node.Process (exit')
+import Node.Process (exit') as Process
 import Lint (runLinter)
 import Lint.RuleSet (Rule)
 
+-- | Private.
 rules :: Array Rule
 rules = []
 
 main :: Effect Unit
-main = launchAff_ do
+main = Aff.launchAff_ do
   clean <- runLinter rules
-  liftEffect (exit' (if clean then 0 else 1))
+  liftEffect (Process.exit' (if clean then 0 else 1))

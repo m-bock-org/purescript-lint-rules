@@ -1,0 +1,83 @@
+{
+  "exempt": [],
+  "pending": [
+    {
+      "rule": "facade-layout",
+      "modules": [
+        "Lint.Rules.Height.*",
+        "Lint.Rules.Naming.*",
+        "Lint.Rules.Nesting.*",
+        "Lint.Rules.Size.*",
+        "Lint.Rules.Width.*"
+      ],
+      "why": "BACKLOG (6 findings): the rule modules are grouped by what they measure - Height, Naming, Nesting, Size, Width - which puts them two segments below the package root, where this rule recognises only `<Pkg>.<Name>` and `<Pkg>.Data.<Name>` as public. The grouping is right; it is the rule's list of allowed namespaces that is incomplete. Same complaint as gig-pilot's `Service.Source.*`, `Service.Http.*` and `Web.TsBridge.*`, so this is one decision across three repositories - which sub-namespaces count as public - and not five separate exemptions."
+    },
+    {
+      "rule": "max-delimiter-run",
+      "modules": [
+        "Lint.Rules.Naming.NoStutteringName",
+        "Lint.Rules.Size.MaxFunctionArity",
+        "Test.Docs"
+      ],
+      "why": "BACKLOG (5 findings): expressions built inline where a `let` would name the inner part."
+    },
+    {
+      "rule": "combinator-atoms",
+      "modules": [
+        "Lint.Rules.Nesting.MaxDelimiterRun",
+        "Test.Docs"
+      ],
+      "why": "BACKLOG (2 findings): `maybe`/`fromMaybe` given arguments that have to be built, where a `case` reads better."
+    },
+    {
+      "rule": "combinator-one-line",
+      "modules": [
+        "Lint.Rules.Nesting.MaxDelimiterRun",
+        "Test.Docs"
+      ],
+      "why": "BACKLOG (2 findings): a combinator spread over more than one line, which is the point at which a `case` is clearer."
+    },
+    {
+      "rule": "two-branch-guard",
+      "modules": [
+        "Test.Docs"
+      ],
+      "why": "BACKLOG (3 findings): guards where two branches would read as an if/else."
+    },
+    {
+      "rule": "max-call-stack-depth",
+      "modules": [
+        "Test.Docs"
+      ],
+      "why": "BACKLOG (2 findings): calls nested deeper than the max, wanting intermediate names."
+    },
+    {
+      "rule": "case-arm-layout",
+      "modules": [
+        "Test.Docs"
+      ],
+      "why": "BACKLOG (1 finding): arms disagreeing about whether the body follows `->` or starts on the next line."
+    },
+    {
+      "rule": "no-same-kind-block-nesting",
+      "modules": [
+        "Test.Docs"
+      ],
+      "why": "BACKLOG (1 finding): a block nested directly inside a block of the same kind, which flattens."
+    },
+    {
+      "rule": "no-where-clauses",
+      "modules": [
+        "Lint.Rules.Naming.NoStutteringName"
+      ],
+      "why": "BACKLOG (1 finding): a `where` clause, where this style uses `let` so bindings read in the order they are needed."
+    },
+    {
+      "rule": "max-string-literal-length",
+      "modules": [
+        "Lint.Rules.Size.MaxFunctionArity"
+      ],
+      "why": "BACKLOG (1 finding): 170 characters of guidance prose held as a string literal. The rule's own hint says where it goes - this module's trailing comment - so this one has a known fix rather than a judgement call."
+    }
+  ]
+}

@@ -19,6 +19,7 @@ type Delimiter = { side :: Side, line :: Int }
 
 type Run = { side :: Side, line :: Int, count :: Int }
 
+-- | Uses `findings`.
 maxDelimiterRun :: ModuleLint Int
 maxDelimiterRun =
   { name: "max-delimiter-run"
@@ -33,10 +34,12 @@ maxDelimiterRun =
   , rule: \maxRun _context cstModule -> violations (findings maxRun cstModule)
   }
 
+-- | Private. Used only by `maxDelimiterRun`. Uses `tooLong`, `extendRun`, `delimiters`.
 findings :: Int -> Module Void -> Array String
 findings maxRun cstModule = Array.mapMaybe (tooLong maxRun)
   (Array.foldl extendRun [] (delimiters cstModule))
 
+-- | Private, depth 2. Used only by `findings`. Uses `sideLabel`.
 tooLong :: Int -> Run -> Maybe String
 tooLong maxRun run =
   if run.count <= maxRun then Nothing
@@ -52,16 +55,19 @@ tooLong maxRun run =
     , " - use $ for the outermost application, or name an inner part with a let"
     ]
 
+-- | Private, depth 2. Used only by `findings`. Uses `sideOf`.
 delimiters :: Module Void -> Array Delimiter
 delimiters cstModule = Array.mapMaybe
   (\token -> map (\side -> { side, line: token.range.start.line }) (sideOf token.value))
   (TokenList.toArray (tokensOf cstModule))
 
+-- | Private, depth 3. Used only by `tooLong`.
 sideLabel :: Side -> String
 sideLabel = case _ of
   Opening -> "open"
   Closing -> "close"
 
+-- | Private, depth 2. Used only by `findings`.
 extendRun :: Array Run -> Delimiter -> Array Run
 extendRun acc next =
   let
@@ -71,6 +77,7 @@ extendRun acc next =
     Maybe.maybe fresh (\run -> if run.side == next.side then bumped run else fresh)
       (Array.last acc)
 
+-- | Private, depth 3. Used only by `delimiters`.
 sideOf :: Token -> Maybe Side
 sideOf = case _ of
   TokLeftParen -> Just Opening
