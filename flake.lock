@@ -7,17 +7,34 @@
         "purescript-overlay": "purescript-overlay"
       },
       "locked": {
-        "lastModified": 1788521443,
-        "narHash": "sha256-w2Stu71MGVqB4VVwy4R1gaKmt9jrGr1lWYMEq3dHpts=",
+        "lastModified": 1788626317,
+        "narHash": "sha256-XBBD1wHqVah9dGgecXOT68WpTxIE6jwvseA/0rbnxqM=",
         "ref": "refs/heads/main",
-        "rev": "9d82aa878332a5f7301c0ae76d13686982245a18",
-        "revCount": 39,
+        "rev": "5e83437ff5239e2ee7f51bf913e88bc781cf6a00",
+        "revCount": 49,
         "type": "git",
         "url": "ssh://git@github.com/m-bock-org/al-dente"
       },
       "original": {
         "type": "git",
         "url": "ssh://git@github.com/m-bock-org/al-dente"
+      }
+    },
+    "encode-decode": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1788114296,
+        "narHash": "sha256-x3E4CN2IM7JA/yuTGnKlrGtymBSV055Cbz5ZFo1twjY=",
+        "owner": "m-bock",
+        "repo": "purescript-encode-decode",
+        "rev": "07a361b0e42314ee6521b8ccc774eca117be57d0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "m-bock",
+        "repo": "purescript-encode-decode",
+        "rev": "07a361b0e42314ee6521b8ccc774eca117be57d0",
+        "type": "github"
       }
     },
     "flake-compat": {
@@ -87,6 +104,23 @@
       "original": {
         "owner": "numtide",
         "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "lint-purs": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1788163555,
+        "narHash": "sha256-0c56tGVKoJrLeYtbA8UYsgCdC2i9aNPEC+qEr6dXj88=",
+        "owner": "m-bock",
+        "repo": "purescript-lint",
+        "rev": "8a66e34f5bb28954f0f3f657012a243e3e4258b1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "m-bock",
+        "repo": "purescript-lint",
+        "rev": "8a66e34f5bb28954f0f3f657012a243e3e4258b1",
         "type": "github"
       }
     },
@@ -185,7 +219,9 @@
     "root": {
       "inputs": {
         "al-dente": "al-dente",
+        "encode-decode": "encode-decode",
         "flake-utils": "flake-utils_2",
+        "lint-purs": "lint-purs",
         "lint-regulator": "lint-regulator",
         "nixpkgs": "nixpkgs_3"
       }

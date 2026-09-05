@@ -17,9 +17,16 @@
     # brings its own pin along, and the workspace is then compiled by
     # one version while the thing judging it was built by another.
     lint-regulator.inputs.al-dente.follows = "al-dente";
+
+    # Generated from spago.lock by `just inputs-sync` - every git
+    # dependency needs one, because evaluation does not fetch.
+    # al-dente:git-inputs:begin
+    "encode-decode" = { url = "github:m-bock/purescript-encode-decode/07a361b0e42314ee6521b8ccc774eca117be57d0"; flake = false; };
+    "lint-purs" = { url = "github:m-bock/purescript-lint/8a66e34f5bb28954f0f3f657012a243e3e4258b1"; flake = false; };
+    # al-dente:git-inputs:end
   };
 
-  outputs = { self, nixpkgs, flake-utils, al-dente, lint-regulator, ... }:
+  outputs = inputs@{ self, nixpkgs, flake-utils, al-dente, lint-regulator, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
@@ -33,6 +40,12 @@
         workspace = lib.mkWorkspace {
           src = ./.;
           name = "lint-purs-rules";
+          gitPaths = {
+            # al-dente:git-paths:begin
+            "encode-decode" = inputs."encode-decode";
+            "lint-purs" = inputs."lint-purs";
+            # al-dente:git-paths:end
+          };
         };
       in
       {
@@ -62,6 +75,10 @@
         # 541-module rebuild, and it is the granularity this workspace
         # is built to have.
         packages.restoreOutput = lib.mkRestore { output = workspace.testOutput; };
+
+        # Writes this flake's git inputs from spago.lock, so the
+        # revision is recorded once rather than in two files.
+        packages.syncFlakeInputs = lib.syncInputs;
 
         checks = {
           # The public style, as a derivation. It needs spago and a
