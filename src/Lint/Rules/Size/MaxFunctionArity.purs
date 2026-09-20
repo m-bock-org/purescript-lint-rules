@@ -22,17 +22,17 @@ maxFunctionArity =
   , rule: \maxArity _context decl -> case decl of
       DeclValue { name: Name { name: Ident n }, binders }
         | Array.length binders > maxArity ->
-            withHint
-              "group related ones into a record, or a tuple where they have no good names"
-              ( violations
-                  [ fold
-                      [ n
-                      , " takes "
-                      , show (Array.length binders)
-                      , " arguments, over the max of "
-                      , show maxArity
-                      ]
-                  ]
-              )
+            let
+              messageParts =
+                [ n
+                , " takes "
+                , show (Array.length binders)
+                , " arguments, over the max of "
+                , show maxArity
+                ]
+            in
+              withHint
+                "group related ones into a record, or a tuple where they have no good names"
+                (violations [ fold messageParts ])
       _ -> violations []
   }
