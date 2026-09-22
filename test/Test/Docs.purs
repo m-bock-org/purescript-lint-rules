@@ -35,7 +35,7 @@ type Described cfg r =
 -- | Private. Used only by `groups`. Uses `examples`.
 row :: ∀ cfg r. Described cfg r -> String
 row r = Str.joinWith "\n"
-  ( [ "### ● `" <> r.name <> "`", "", r.description ] <> examples r )
+  ([ "### ● `" <> r.name <> "`", "", r.description ] <> examples r)
 
 -- | Private, depth 2. Used only by `row`. Uses `quoted`, `labelled`.
 examples :: ∀ cfg r. Described cfg r -> Array String
