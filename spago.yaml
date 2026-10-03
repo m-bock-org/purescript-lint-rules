@@ -9,12 +9,10 @@ package:
       githubRepo: purescript-lint-rules
   dependencies:
     - arrays
-    - const
     - foldable-traversable
     - language-cst-parser
     - lint-purs
     - maybe
-    - newtype
     - ordered-collections
     - prelude
     - strings
@@ -24,18 +22,9 @@ package:
     main: Test.Lint
     dependencies:
       - aff
+      - console
       - effect
       - node-buffer
       - node-fs
       - node-process
       - strings
-workspace:
-  packageSet:
-    registry: 66.9.0
-  extraPackages:
-    lint-purs:
-      git: https://github.com/m-bock/purescript-lint.git
-      ref: 8a66e34f5bb28954f0f3f657012a243e3e4258b1
-    encode-decode:
-      git: https://github.com/m-bock/purescript-encode-decode.git
-      ref: 07a361b0e42314ee6521b8ccc774eca117be57d0

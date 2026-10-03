@@ -1,0 +1,69 @@
+# What lint-rules is not in step with, and why.
+exemptions:
+  - rule: facade-layout
+    modules:
+      - Lint.Rules.Height.*
+      - Lint.Rules.Naming.*
+      - Lint.Rules.Nesting.*
+      - Lint.Rules.Size.*
+      - Lint.Rules.Width.*
+    why: >-
+      the rule modules are grouped by what they measure - Height, Naming, Nesting, Size, Width -
+      which puts them two segments below the package root, where this rule recognises only
+      `<Pkg>.<Name>` and `<Pkg>.Data.<Name>` as public. The grouping is right; it is the rule's list
+      of allowed namespaces that is incomplete. Same complaint as gig-pilot's `Service.Source.*`,
+      `Service.Http.*` and `Web.TsBridge.*`, so this is one decision across three repositories -
+      which sub-namespaces count as public - and not five separate exemptions.
+    kind: backlog
+  - rule: max-delimiter-run
+    modules:
+      - Lint.Rules.Naming.NoStutteringName
+      - Lint.Rules.Size.MaxFunctionArity
+      - Test.Docs
+    why: expressions built inline where a `let` would name the inner part.
+    kind: backlog
+  - rule: combinator-atoms
+    modules:
+      - Lint.Rules.Nesting.MaxDelimiterRun
+      - Test.Docs
+    why: "`maybe`/`fromMaybe` given arguments that have to be built, where a `case` reads better."
+    kind: backlog
+  - rule: combinator-one-line
+    modules:
+      - Lint.Rules.Nesting.MaxDelimiterRun
+      - Test.Docs
+    why: a combinator spread over more than one line, which is the point at which a `case` is clearer.
+    kind: backlog
+  - rule: two-branch-guard
+    modules:
+      - Test.Docs
+    why: guards where two branches would read as an if/else.
+    kind: backlog
+  - rule: max-call-stack-depth
+    modules:
+      - Test.Docs
+    why: calls nested deeper than the max, wanting intermediate names.
+    kind: backlog
+  - rule: case-arm-layout
+    modules:
+      - Test.Docs
+    why: arms disagreeing about whether the body follows `->` or starts on the next line.
+    kind: backlog
+  - rule: no-same-kind-block-nesting
+    modules:
+      - Test.Docs
+    why: a block nested directly inside a block of the same kind, which flattens.
+    kind: backlog
+  - rule: no-where-clauses
+    modules:
+      - Lint.Rules.Naming.NoStutteringName
+    why: a `where` clause, where this style uses `let` so bindings read in the order they are needed.
+    kind: backlog
+  - rule: max-string-literal-length
+    modules:
+      - Lint.Rules.Size.MaxFunctionArity
+    why: >-
+      170 characters of guidance prose held as a string literal. The rule's own hint says where it
+      goes - this module's trailing comment - so this one has a known fix rather than a judgement
+      call.
+    kind: backlog
