@@ -1,4 +1,6 @@
-# What lint-rules is not in step with, and why.
+# What lint-purs-rules is not in step with, and why. This file reaches
+# this package's modules and no other's; the workspace root has
+# its own for what spans packages.
 exemptions:
   - rule: facade-layout
     modules:
@@ -7,6 +9,8 @@ exemptions:
       - Lint.Rules.Nesting.*
       - Lint.Rules.Size.*
       - Lint.Rules.Width.*
+    kind: backlog
+    since: ""
     why: >-
       the rule modules are grouped by what they measure - Height, Naming, Nesting, Size, Width -
       which puts them two segments below the package root, where this rule recognises only
@@ -14,56 +18,232 @@ exemptions:
       of allowed namespaces that is incomplete. Same complaint as gig-pilot's `Service.Source.*`,
       `Service.Http.*` and `Web.TsBridge.*`, so this is one decision across three repositories -
       which sub-namespaces count as public - and not five separate exemptions.
-    kind: backlog
   - rule: max-delimiter-run
     modules:
       - Lint.Rules.Naming.NoStutteringName
       - Lint.Rules.Size.MaxFunctionArity
       - Test.Docs
-    why: expressions built inline where a `let` would name the inner part.
     kind: backlog
+    since: ""
+    why: expressions built inline where a `let` would name the inner part.
   - rule: combinator-atoms
     modules:
       - Lint.Rules.Nesting.MaxDelimiterRun
       - Test.Docs
-    why: "`maybe`/`fromMaybe` given arguments that have to be built, where a `case` reads better."
     kind: backlog
+    since: ""
+    why: "`maybe`/`fromMaybe` given arguments that have to be built, where a `case` reads better."
   - rule: combinator-one-line
     modules:
       - Lint.Rules.Nesting.MaxDelimiterRun
       - Test.Docs
-    why: a combinator spread over more than one line, which is the point at which a `case` is clearer.
     kind: backlog
+    since: ""
+    why: a combinator spread over more than one line, which is the point at which a `case` is clearer.
   - rule: two-branch-guard
     modules:
       - Test.Docs
-    why: guards where two branches would read as an if/else.
     kind: backlog
+    since: ""
+    why: guards where two branches would read as an if/else.
   - rule: max-call-stack-depth
     modules:
       - Test.Docs
-    why: calls nested deeper than the max, wanting intermediate names.
     kind: backlog
+    since: ""
+    why: calls nested deeper than the max, wanting intermediate names.
   - rule: case-arm-layout
     modules:
       - Test.Docs
-    why: arms disagreeing about whether the body follows `->` or starts on the next line.
     kind: backlog
+    since: ""
+    why: arms disagreeing about whether the body follows `->` or starts on the next line.
   - rule: no-same-kind-block-nesting
     modules:
       - Test.Docs
-    why: a block nested directly inside a block of the same kind, which flattens.
     kind: backlog
+    since: ""
+    why: a block nested directly inside a block of the same kind, which flattens.
   - rule: no-where-clauses
     modules:
       - Lint.Rules.Naming.NoStutteringName
-    why: a `where` clause, where this style uses `let` so bindings read in the order they are needed.
     kind: backlog
+    since: ""
+    why: a `where` clause, where this style uses `let` so bindings read in the order they are needed.
   - rule: max-string-literal-length
     modules:
       - Lint.Rules.Size.MaxFunctionArity
+    kind: backlog
+    since: ""
     why: >-
       170 characters of guidance prose held as a string literal. The rule's own hint says where it
       goes - this module's trailing comment - so this one has a known fix rather than a judgement
       call.
+  - rule: no-prelude-import
+    modules:
+      - Lint.Rules.Height.MaxDeclarationLines
+      - Lint.Rules.Naming.NoStutteringName
+      - Lint.Rules.Nesting.LambdaNestingDepth
+      - Lint.Rules.Nesting.MaxDelimiterRun
+      - Lint.Rules.Size.MaxFunctionArity
+      - Lint.Rules.Width.MaxLineLength
+      - Test.Docs
+      - Test.Lint
     kind: backlog
+    since: "2026-10-04"
+    why: >-
+      A finding on 2026-10-04, when nineteen repositories became this one workspace and the lint
+      became a gate. Not a decision: fix it and delete this line.
+  - rule: test-names-its-subject
+    modules:
+      - Test.Docs
+      - Test.Lint
+    kind: backlog
+    since: "2026-10-04"
+    why: >-
+      A finding on 2026-10-04, when nineteen repositories became this one workspace and the lint
+      became a gate. Not a decision: fix it and delete this line.
+  - rule: exposed-modules
+    modules:
+      - Lint.Rules.Height.MaxDeclarationLines
+      - Lint.Rules.Naming.NoStutteringName
+      - Lint.Rules.Nesting.LambdaNestingDepth
+      - Lint.Rules.Nesting.MaxDelimiterRun
+      - Lint.Rules.Size.MaxFunctionArity
+      - Lint.Rules.Width.MaxLineLength
+      - Test.Docs
+      - Test.Lint
+    kind: backlog
+    since: "2026-10-04"
+    why: >-
+      A finding on 2026-10-04, when nineteen repositories became this one workspace and the lint
+      became a gate. Not a decision: fix it and delete this line.
+  - rule: comment-policy
+    modules:
+      - Lint.Rules.Naming.NoStutteringName
+      - Lint.Rules.Nesting.LambdaNestingDepth
+      - Lint.Rules.Nesting.MaxDelimiterRun
+      - Lint.Rules.Width.MaxLineLength
+      - Test.Docs
+      - Test.Lint
+    kind: backlog
+    since: "2026-10-04"
+    why: >-
+      A finding on 2026-10-04, when nineteen repositories became this one workspace and the lint
+      became a gate. Not a decision: fix it and delete this line.
+  - rule: explicit-bind-signatures
+    modules:
+      - Test.Docs
+      - Test.Lint
+    kind: backlog
+    since: "2026-10-04"
+    why: >-
+      A finding on 2026-10-04, when nineteen repositories became this one workspace and the lint
+      became a gate. Not a decision: fix it and delete this line.
+  - rule: explicit-imports
+    modules:
+      - Lint.Rules.Naming.NoStutteringName
+      - Lint.Rules.Width.MaxLineLength
+    kind: backlog
+    since: "2026-10-04"
+    why: >-
+      A finding on 2026-10-04, when nineteen repositories became this one workspace and the lint
+      became a gate. Not a decision: fix it and delete this line.
+  - rule: explicit-lambda-signatures
+    modules:
+      - Lint.Rules.Height.MaxDeclarationLines
+      - Lint.Rules.Naming.NoStutteringName
+      - Lint.Rules.Nesting.LambdaNestingDepth
+      - Lint.Rules.Nesting.MaxDelimiterRun
+      - Lint.Rules.Size.MaxFunctionArity
+      - Lint.Rules.Width.MaxLineLength
+      - Test.Docs
+    kind: backlog
+    since: "2026-10-04"
+    why: >-
+      A finding on 2026-10-04, when nineteen repositories became this one workspace and the lint
+      became a gate. Not a decision: fix it and delete this line.
+  - rule: explicit-let-signatures
+    modules:
+      - Lint.Rules.Height.MaxDeclarationLines
+      - Lint.Rules.Nesting.LambdaNestingDepth
+      - Lint.Rules.Nesting.MaxDelimiterRun
+      - Lint.Rules.Size.MaxFunctionArity
+      - Lint.Rules.Width.MaxLineLength
+      - Test.Docs
+    kind: backlog
+    since: "2026-10-04"
+    why: >-
+      A finding on 2026-10-04, when nineteen repositories became this one workspace and the lint
+      became a gate. Not a decision: fix it and delete this line.
+  - rule: inlinable-top-level
+    modules:
+      - Lint.Rules.Naming.NoStutteringName
+      - Test.Docs
+      - Test.Lint
+    kind: backlog
+    since: "2026-10-04"
+    why: >-
+      A finding on 2026-10-04, when nineteen repositories became this one workspace and the lint
+      became a gate. Not a decision: fix it and delete this line.
+  - rule: module-matches-package
+    modules:
+      - Lint.Rules.Height.MaxDeclarationLines
+      - Lint.Rules.Naming.NoStutteringName
+      - Lint.Rules.Nesting.LambdaNestingDepth
+      - Lint.Rules.Nesting.MaxDelimiterRun
+      - Lint.Rules.Size.MaxFunctionArity
+      - Lint.Rules.Width.MaxLineLength
+    kind: backlog
+    since: "2026-10-04"
+    why: >-
+      A finding on 2026-10-04, when nineteen repositories became this one workspace and the lint
+      became a gate. Not a decision: fix it and delete this line.
+  - rule: no-data-declarations
+    modules:
+      - Lint.Rules.Nesting.MaxDelimiterRun
+    kind: backlog
+    since: "2026-10-04"
+    why: >-
+      A finding on 2026-10-04, when nineteen repositories became this one workspace and the lint
+      became a gate. Not a decision: fix it and delete this line.
+  - rule: no-vague-names
+    modules:
+      - Lint.Rules.Naming.NoStutteringName
+      - Lint.Rules.Nesting.MaxDelimiterRun
+    kind: backlog
+    since: "2026-10-04"
+    why: >-
+      A finding on 2026-10-04, when nineteen repositories became this one workspace and the lint
+      became a gate. Not a decision: fix it and delete this line.
+  - rule: one-line-record-fields
+    modules:
+      - Lint.Rules.Nesting.MaxDelimiterRun
+    kind: backlog
+    since: "2026-10-04"
+    why: >-
+      A finding on 2026-10-04, when nineteen repositories became this one workspace and the lint
+      became a gate. Not a decision: fix it and delete this line.
+  - rule: record-field-layout
+    modules:
+      - Lint.Rules.Height.MaxDeclarationLines
+      - Lint.Rules.Naming.NoStutteringName
+      - Lint.Rules.Nesting.LambdaNestingDepth
+      - Lint.Rules.Nesting.MaxDelimiterRun
+      - Lint.Rules.Size.MaxFunctionArity
+      - Lint.Rules.Width.MaxLineLength
+    kind: backlog
+    since: "2026-10-04"
+    why: >-
+      A finding on 2026-10-04, when nineteen repositories became this one workspace and the lint
+      became a gate. Not a decision: fix it and delete this line.
+  - rule: sinkable-top-level
+    modules:
+      - Lint.Rules.Nesting.LambdaNestingDepth
+      - Lint.Rules.Nesting.MaxDelimiterRun
+      - Lint.Rules.Width.MaxLineLength
+    kind: backlog
+    since: "2026-10-04"
+    why: >-
+      A finding on 2026-10-04, when nineteen repositories became this one workspace and the lint
+      became a gate. Not a decision: fix it and delete this line.
