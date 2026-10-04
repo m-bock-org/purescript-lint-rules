@@ -7,6 +7,11 @@
 
 [![CI](https://github.com/m-bock/purescript-lint-rules/actions/workflows/ci.yml/badge.svg)](https://github.com/m-bock/purescript-lint-rules/actions/workflows/ci.yml)
 
+Read-only mirror of the `m-bock-org/purescript-libs` monorepo, where
+this library is built, tested and reviewed. Pull requests here are
+welcome but are applied there by hand and then mirrored back; the
+mirror itself has no build of its own.
+
 A set of general-purpose lint rules for the
 [`purescript-lint`](https://github.com/m-bock/purescript-lint) engine.
 
