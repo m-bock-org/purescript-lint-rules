@@ -108,7 +108,7 @@ Flags a top-level declaration whose own source line span exceeds the configured 
 
 ### ● `max-line-length`
 
-Flags a line over the configured width - a type signature gets its own, wider allowance than ordinary code.
+Flags a line over the configured width - a type signature gets its own, wider allowance than ordinary code. Import lines are not measured: an import is looked up rather than read, and one line each is the house style.
 
 > **Config** `{ code: 100, signature: 150 }`
 >

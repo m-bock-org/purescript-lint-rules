@@ -12,7 +12,14 @@ import Data.Set as Set
 import Data.Tuple.Nested (type (/\), (/\))
 import PureScript.CST.Range (rangeOf, tokensOf)
 import PureScript.CST.Range.TokenList (toArray) as TokenList
-import PureScript.CST.Types (Declaration(..), Module(..), ModuleBody(..), SourceToken, Token(..))
+import PureScript.CST.Types
+  ( Declaration(..)
+  , Module(..)
+  , ModuleBody(..)
+  , ModuleHeader(..)
+  , SourceToken
+  , Token(..)
+  )
 import Lint.Rule (ModuleLint, violations)
 
 type LineWidths = { code :: Int, signature :: Int }
@@ -29,7 +36,8 @@ maxLineLength =
   { name: "max-line-length"
   , description:
       "Flags a line over the configured width - a type signature gets its"
-        <> " own, wider allowance than ordinary code."
+        <> " own, wider allowance than ordinary code. Import lines are not measured:"
+        <> " an import is looked up rather than read, and one line each is the house style."
   , examples: Just
       { config: { code: 100, signature: 150 }
       , printConfig: Just <<< show
@@ -46,11 +54,17 @@ maxLineLength =
   , rule: \widths _context cstModule -> violations (overLongLines widths cstModule)
   }
 
--- | Private. Used only by `maxLineLength`. Uses `tooWide`, `signatureLines`, `widthByLine`.
+-- | Private. Used only by `maxLineLength`. Uses `tooWide`, `signatureLines`, `importLines`,
+-- | `widthByLine`.
 overLongLines :: LineWidths -> Module Void -> Array String
-overLongLines widths cstModule = Array.mapMaybe
-  (tooWide widths (signatureLines cstModule))
-  (Map.toUnfoldable (widthByLine cstModule))
+overLongLines widths cstModule =
+  let
+    imported = importLines cstModule
+    measured (line /\ _) = not (Set.member line imported)
+  in
+    Array.mapMaybe
+      (tooWide widths (signatureLines cstModule))
+      (Array.filter measured (Map.toUnfoldable (widthByLine cstModule)))
 
 -- | Private, depth 2. Used only by `overLongLines`.
 tooWide :: LineWidths -> Set Int -> Int /\ Int -> Maybe String
@@ -97,3 +111,9 @@ signatureLines (Module { body: ModuleBody { decls } }) =
       _ -> []
   in
     Set.fromFoldable (Array.concatMap spannedLines decls)
+
+-- | Private, depth 2. Used only by `overLongLines`.
+importLines :: Module Void -> Set Int
+importLines (Module { header: ModuleHeader { imports } }) =
+  Set.fromFoldable
+    (Array.concatMap (\one -> Array.range (rangeOf one).start.line (rangeOf one).end.line) imports)
