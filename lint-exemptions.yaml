@@ -273,3 +273,12 @@ exemptions:
     why: >-
       A finding on 2026-10-19, when do-bind-layout began asking for a blank line around a
       statement that spans lines. Not a decision: fix it and delete this line.
+  - rule: no-qualified-type
+    modules:
+      - Lint.Rules.Naming.NoStutteringName
+    kind: backlog
+    since: "2026-10-19"
+    why: >-
+      8 findings in 1 module, found when no-qualified-type was switched on: a type written
+      qualified, or listed in a qualified import. Not a decision: import each type bare, values
+      qualified, and delete this entry.
