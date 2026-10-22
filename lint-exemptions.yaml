@@ -87,6 +87,7 @@ exemptions:
       - Lint.Rules.Nesting.MaxDelimiterRun
       - Lint.Rules.Size.MaxFunctionArity
       - Lint.Rules.Width.MaxLineLength
+      - Lint.Rules.Width.TypeLines
       - Test.Docs
       - Test.Lint
     kind: backlog
@@ -194,6 +195,7 @@ exemptions:
       - Lint.Rules.Nesting.MaxDelimiterRun
       - Lint.Rules.Size.MaxFunctionArity
       - Lint.Rules.Width.MaxLineLength
+      - Lint.Rules.Width.TypeLines
     kind: backlog
     since: "2026-10-04"
     why: >-

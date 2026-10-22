@@ -108,9 +108,9 @@ Flags a top-level declaration whose own source line span exceeds the configured 
 
 ### ● `max-line-length`
 
-Flags a line over the configured width - a type signature gets its own, wider allowance than ordinary code. Import lines are not measured: an import is looked up rather than read, and one line each is the house style.
+Flags a line over the configured width - a line that is all type gets its own, wider allowance than code: a signature at the top level, in a `let` or `where`, on a class member or an instance method; a `type`, `newtype`, `data`, kind or foreign declaration; a record or row type's fields; the `:: Type` of an annotation once it stands on a line of its own. A line holding any code is code. Import lines are not measured: an import is looked up rather than read, and one line each is the house style.
 
-> **Config** `{ code: 100, signature: 150 }`
+> **Config** `{ code: 100, types: 150 }`
 >
 > **Good**
 > ```purescript

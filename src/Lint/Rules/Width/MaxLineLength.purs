@@ -1,4 +1,4 @@
-module Lint.Rules.Width.MaxLineLength (maxLineLength) where
+module Lint.Rules.Width.MaxLineLength (maxLineLength, overLongLines) where
 
 import Prelude
 
@@ -10,19 +10,18 @@ import Data.Maybe (Maybe(..))
 import Data.Set (Set)
 import Data.Set as Set
 import Data.Tuple.Nested (type (/\), (/\))
+import Lint.Rules.Width.TypeLines (typeLines)
 import PureScript.CST.Range (rangeOf, tokensOf)
 import PureScript.CST.Range.TokenList (toArray) as TokenList
 import PureScript.CST.Types
-  ( Declaration(..)
-  , Module(..)
-  , ModuleBody(..)
+  ( Module(..)
   , ModuleHeader(..)
   , SourceToken
   , Token(..)
   )
 import Lint.Rule (ModuleLint, violations)
 
-type LineWidths = { code :: Int, signature :: Int }
+type LineWidths = { code :: Int, types :: Int }
 
 -- |
 -- | The examples below are split across source lines with `<>` so this
@@ -35,11 +34,17 @@ maxLineLength :: ModuleLint LineWidths
 maxLineLength =
   { name: "max-line-length"
   , description:
-      "Flags a line over the configured width - a type signature gets its"
-        <> " own, wider allowance than ordinary code. Import lines are not measured:"
-        <> " an import is looked up rather than read, and one line each is the house style."
+      fold
+        [ "Flags a line over the configured width - a line that is all type gets its own, wider"
+        , " allowance than code: a signature at the top level, in a `let` or `where`, on a class"
+        , " member or an instance method; a `type`, `newtype`, `data`, kind or foreign"
+        , " declaration; a record or row type's fields; the `:: Type` of an annotation once it"
+        , " stands on a line of its own. A line holding any code is code. Import lines are not"
+        , " measured: an import is looked up rather than read, and one line each is the house"
+        , " style."
+        ]
   , examples: Just
-      { config: { code: 100, signature: 150 }
+      { config: { code: 100, types: 150 }
       , printConfig: Just <<< show
       , good:
           [ "describe x =\n  \"value: \" <> show x\n"
@@ -54,8 +59,7 @@ maxLineLength =
   , rule: \widths _context cstModule -> violations (overLongLines widths cstModule)
   }
 
--- | Private. Used only by `maxLineLength`. Uses `tooWide`, `signatureLines`, `importLines`,
--- | `widthByLine`.
+-- | One finding per line wider than its allowance. Uses `tooWide`, `importLines`, `widthByLine`.
 overLongLines :: LineWidths -> Module Void -> Array String
 overLongLines widths cstModule =
   let
@@ -63,16 +67,16 @@ overLongLines widths cstModule =
     measured (line /\ _) = not (Set.member line imported)
   in
     Array.mapMaybe
-      (tooWide widths (signatureLines cstModule))
+      (tooWide widths (typeLines cstModule))
       (Array.filter measured (Map.toUnfoldable (widthByLine cstModule)))
 
 -- | Private, depth 2. Used only by `overLongLines`.
 tooWide :: LineWidths -> Set Int -> Int /\ Int -> Maybe String
-tooWide widths sigLines (line /\ width) =
+tooWide widths allTypeLines (line /\ width) =
   let
-    isSignature = Set.member line sigLines
-    allowed = if isSignature then widths.signature else widths.code
-    kind = if isSignature then " for a type signature" else " for code"
+    isType = Set.member line allTypeLines
+    allowed = if isType then widths.types else widths.code
+    kind = if isType then " for a type" else " for code"
     message = fold
       [ "line "
       , show (line + 1)
@@ -100,17 +104,6 @@ isStringToken token = case token.value of
   TokString _ _ -> true
   TokRawString _ -> true
   _ -> false
-
--- | Private, depth 2. Used only by `overLongLines`.
-signatureLines :: Module Void -> Set Int
-signatureLines (Module { body: ModuleBody { decls } }) =
-  let
-    spannedLines decl = case decl of
-      DeclSignature _ -> Array.range (rangeOf decl).start.line (rangeOf decl).end.line
-      DeclType _ _ _ -> Array.range (rangeOf decl).start.line (rangeOf decl).end.line
-      _ -> []
-  in
-    Set.fromFoldable (Array.concatMap spannedLines decls)
 
 -- | Private, depth 2. Used only by `overLongLines`.
 importLines :: Module Void -> Set Int
