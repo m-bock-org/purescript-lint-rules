@@ -293,3 +293,51 @@ exemptions:
       1 finding in 1 module on 2026-10-19, when doc-comment-noun-phrase
       began refusing a doc comment that opens with a question word or `Returns`. Not a
       decision: name the thing, as a noun phrase, and delete this line.
+  - rule: no-multiline-lambda-field
+    modules:
+      - Lint.Rules.Height.MaxDeclarationLines
+      - Lint.Rules.Size.MaxFunctionArity
+    kind: backlog
+    since: "2026-10-24"
+    why: >-
+      moved to default 2026-10-24; not fixed outside endpoint
+  - rule: no-qualified-import-list
+    modules:
+      - Lint.Rules.Naming.NoStutteringName
+      - Lint.Rules.Nesting.MaxDelimiterRun
+      - Lint.Rules.Size.MaxFunctionArity
+      - Lint.Rules.Width.MaxLineLength
+      - Lint.Rules.Width.TypeLines
+      - Test.Docs
+      - Test.Lint
+    kind: backlog
+    since: "2026-10-24"
+    why: >-
+      moved to default 2026-10-24; not fixed outside endpoint
+  - rule: no-show-outside-tests
+    modules:
+      - Lint.Rules.Height.MaxDeclarationLines
+      - Lint.Rules.Nesting.LambdaNestingDepth
+      - Lint.Rules.Nesting.MaxDelimiterRun
+      - Lint.Rules.Size.MaxFunctionArity
+      - Lint.Rules.Width.MaxLineLength
+    kind: backlog
+    since: "2026-10-24"
+    why: >-
+      moved to default 2026-10-24; not fixed outside endpoint
+  - rule: one-let-per-binding
+    modules:
+      - Test.Docs
+    kind: backlog
+    since: "2026-10-24"
+    why: >-
+      moved to default 2026-10-24; not fixed outside endpoint
+  - rule: one-line-import
+    modules:
+      - Lint.Rules.Naming.NoStutteringName
+      - Lint.Rules.Width.MaxLineLength
+      - Lint.Rules.Width.TypeLines
+    kind: backlog
+    since: "2026-10-24"
+    why: >-
+      moved to default 2026-10-24; not fixed outside endpoint
